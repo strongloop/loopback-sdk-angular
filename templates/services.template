@@ -1,0 +1,85 @@
+var module = angular.module('lbServices', ['ngResource']);
+module
+  .factory('LoopBackAuth', function() {
+    return {
+      accessToken: null
+    };
+  })
+  .config(function($httpProvider) {
+    $httpProvider.interceptors.push('LoopBackAuthRequestInterceptor');
+  })
+  .factory('LoopBackAuthRequestInterceptor', [ '$q', 'LoopBackAuth',
+    function($q, LoopBackAuth) {
+      return {
+        'request': function(config) {
+          console.log('config', config);
+          if (LoopBackAuth.accessToken) {
+            config.headers.authorization = LoopBackAuth.accessToken;
+          }
+          return config || $q.when(config);
+        }
+      }
+    }])
+  .factory('LoopBackResource', [ '$resource', function($resource) {
+    return function(url, params, actions) {
+      var resource = $resource(url, params, actions);
+
+      // Angular always calls POST on $save()
+      // This hack is based on
+      // http://kirkbushell.me/angular-js-using-ng-resource-in-a-more-restful-manner/
+      resource.prototype.$save = function() {
+        var fn = this.id === undefined ?
+          this.$create :
+          this.$prototype$updateAttributes;
+        fn.apply(this, Array.prototype.slice.call(arguments));
+      }
+
+      return resource;
+    };
+  }]);
+
+<% for (var modelName in models) {
+     var meta = models[modelName];
+-%>
+
+module.factory(<%-: modelName | q %>, ['$q', 'LoopBackResource', 'LoopBackAuth',
+ function($q, Resource, LoopBackAuth) {
+    return Resource(
+      <%-: meta.url | q %>,
+      {
+<% for (var p in meta.paramDefaults) -%>
+        <%- p %>: <%-: meta.paramDefaults[p] | q %>,
+      },
+      {
+<% for (var methodName in meta.actions) {
+     var action = meta.actions[methodName];
+-%>
+        <%- methodName%>: {
+<% for (var key in action) {
+     if (action[key] === undefined) continue;
+-%>
+          <%- key %>: <%-: action[key] | q %>,
+<% } // for key in action -%>
+<% if (modelName === 'User' && methodName === 'login') { -%>
+          interceptor: {
+            response: function(response) {
+              var loginResult = response.data;
+              LoopBackAuth.accessToken = loginResult.id;
+              return response || $q.when(response);
+            }
+          }
+<% } else if (modelName === 'User' && methodName === 'logout') { -%>
+          interceptor: {
+            response: function(response) {
+              LoopBackAuth.accessToken = null;
+              return response || $q.when(response);
+            }
+          }
+<% } -%>
+        },
+<% } // for methodName -%>
+      }
+    );
+  }]);
+<% } -%>
+
