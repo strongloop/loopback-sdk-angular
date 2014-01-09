@@ -4,7 +4,8 @@
   "description": "Service for auto-generating Angular $resource services for LoopBack",
   "main": "index.js",
   "bin": {
-    "lb-ng": "bin/lb-ng"
+    "lb-ng": "bin/lb-ng",
+    "lb-ng-doc": "bin/lb-ng-doc"
   },
   "scripts": {
     "test": "mocha"
@@ -23,7 +24,8 @@
     "url": "https://github.com/strongloop/loopback-angular/issues"
   },
   "dependencies": {
-    "ejs": "~0.8.5"
+    "ejs": "~0.8.5",
+    "docular": "~0.6.3"
   },
   "devDependencies": {
     "chai": "*",
