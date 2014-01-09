@@ -1,5 +1,14 @@
 # loopback-angular
 
+## Status
+
+The spike is fully functional and can be used in any demo applications we
+are developing now. It's probably ok to commit the generated file into
+public github repos, even though we are keeping the generator private for now.
+
+Note that the functionality of the generated resources did not get enough
+testing, expect bugs.
+
 ## Installation
 
 1. Clone this repository and checkout the correct branch
