@@ -119,7 +119,7 @@ define(['angular', 'given', 'util'], function(angular, given, util) {
     });
 
     describe('with authentication', function() {
-      var getNew, createInjector, $injector, User;
+      var getNew, createInjector, $injector, User, $rootScope;
       before(function() {
         return given.servicesForLoopBackApp(
           {
@@ -153,6 +153,7 @@ define(['angular', 'given', 'util'], function(angular, given, util) {
         sessionStorage.clear();
         $injector = createInjector();
         User = $injector.get('User');
+        $rootScope = $injector.get('$rootScope');
       });
 
       it('returns error for an unauthorized request', function() {
@@ -247,6 +248,59 @@ define(['angular', 'given', 'util'], function(angular, given, util) {
           .then(function(token) {
             expect(token.user).to.equal(undefined);
           });
+      });
+
+      it('adds $currentUser & $ensureCurrentUser() to $rootScope', function() {
+        expect($rootScope.$currentUser, '$currentUser').to.equal(null);
+        expect($rootScope.$ensureCurrentUser, '$ensureCurrentUser')
+          .to.be.a('function');
+      });
+
+      it('fetches $currentUser from the server', function() {
+        return givenLoggedInUser(null, { include: '' }).then(function() {
+          var result = $rootScope.$ensureCurrentUser();
+          expect($rootScope.$currentUser, '$rootScope.$currentUser')
+            .to.not.equal(null);
+
+          return result.then(function() {
+            expect($rootScope.$currentUser).to.have.property('email');
+          });
+        });
+      });
+
+      it('uses the value of $currentUser provided by User.login', function() {
+        return givenLoggedInUser().then(function(token) {
+          var result = $rootScope.$ensureCurrentUser();
+          var user = $rootScope.$currentUser;
+          expect(user).to.include.keys(Object.keys(token.user));
+          expect(user.$resolved, '$currentUser.$resolved').to.equal(true);
+          expect(result, 'result').to.equal(user.$promise);
+
+          return result.then(function(promiseResult) {
+            expect(promiseResult).to.equal(user);
+          });
+        });
+      });
+
+      it('clears $currentUser on 401 response', function() {
+        return givenLoggedInUser().then(function(token){
+          $injector.get('LoopBackAuth').accessTokenId = null;
+          return User.get({ id: token.userID }).$promise
+            .then(function() {
+              throw new Error('User.get was supposed to fail.');
+            }, function(res) {
+              expect(res.status).to.equal(401);
+              expect($rootScope.$currentUser).to.equal(null);
+            });
+        });
+      });
+
+      it('clears $currentUser on logout', function() {
+        return givenLoggedInUser().then(function() {
+          return User.logout().$promise.then(function() {
+            expect($rootScope.$currentUser).to.equal(null);
+          });
+        });
       });
 
       var idCounter = 0;
