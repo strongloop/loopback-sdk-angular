@@ -14,11 +14,17 @@ var urlBase = <%-: urlBase | q %>;
  */
 var module = angular.module(<%-: moduleName | q %>, ['ngResource']);
 
-<% for (var modelName in models) {
-     var meta = models[modelName];
+<%
+var hasUserModel = false;
 
-     // capitalize the model name
-     modelName = modelName[0].toUpperCase() + modelName.slice(1);
+for (var modelName in models) {
+  var meta = models[modelName];
+
+  // capitalize the model name
+  modelName = modelName[0].toUpperCase() + modelName.slice(1);
+
+  if (modelName === 'User') hasUserModel = true;
+
 -%>
 /**
  * @ngdoc object
@@ -42,8 +48,10 @@ var module = angular.module(<%-: moduleName | q %>, ['ngResource']);
  */
 module.factory(
   <%-: modelName | q %>,
-  ['LoopBackResource', 'LoopBackAuth', function(Resource, LoopBackAuth) {
-    return Resource(
+  ['LoopBackResource', 'LoopBackAuth', '$q', '$rootScope',
+  function(Resource, LoopBackAuth, $q, $rootScope) {
+    var Model;
+    return Model = Resource(
       urlBase + <%-: meta.ctor.getFullPath() | q %>,
 <% /*
         Constructor arguments are hardcoded for now.
@@ -89,6 +97,9 @@ if (action.getHttpMethod() == 'POST' || action.getHttpMethod() == 'PUT') {
          *
          *  - `<%- arg.arg %>` – `{<%- getJsDocType(arg)  %>}` - <%-
 (arg.description || '').replace(/\n/g, '\n         *   ') %>
+<% if (modelName === 'User' && methodName === 'login' && arg.arg === 'include') { -%>
+         *   Default value: `user`.
+<% } -%>
 <%   }); } -%>
 <% if (modelName === 'User' && methodName === 'login') { -%>
          *
@@ -155,6 +166,9 @@ postData.forEach(function(arg) { -%>
           isArray: true,
 <% } -%>
 <% if (modelName === 'User' && methodName === 'login') { -%>
+          params: {
+            include: "user"
+          },
           interceptor: {
             response: function(response) {
               var accessToken = response.data;
@@ -162,7 +176,23 @@ postData.forEach(function(arg) { -%>
               LoopBackAuth.accessTokenId = accessToken.id;
               LoopBackAuth.rememberMe = response.config.params.rememberMe !== false;
               LoopBackAuth.save();
+              $rootScope.$currentUser = createUserResource(accessToken.user);
               return response.resource;
+
+              function createUserResource(data) {
+                if (!data) return null;
+
+                var user = new Model(data);
+                user.$resolved = true;
+
+                // Create a resolved promise to mirror the behaviour
+                // of $resource HTTP calls
+                var deferred = $q.defer();
+                deferred.resolve(user);
+                user.$promise = deferred.promise;
+
+                return user;
+              }
             }
           }
 <% } else if (modelName === 'User' && methodName === 'logout') { -%>
@@ -171,6 +201,7 @@ postData.forEach(function(arg) { -%>
               LoopBackAuth.currentUserId = null;
               LoopBackAuth.accessTokenId = null;
               LoopBackAuth.save();
+              $rootScope.$currentUser = null;
               return response.resource;
             }
           }
@@ -252,8 +283,8 @@ module
   .config(function($httpProvider) {
     $httpProvider.interceptors.push('LoopBackAuthRequestInterceptor');
   })
-  .factory('LoopBackAuthRequestInterceptor', [ '$q', 'LoopBackAuth',
-    function($q, LoopBackAuth) {
+  .factory('LoopBackAuthRequestInterceptor', [ '$q', '$rootScope', 'LoopBackAuth',
+    function($q, $rootScope, LoopBackAuth) {
       return {
         'request': function(config) {
           if (LoopBackAuth.accessTokenId) {
@@ -270,6 +301,14 @@ module
             return $q.reject(res);
           }
           return config || $q.when(config);
+<% if (hasUserModel) { -%>
+        },
+        'responseError': function(rejection) {
+          if (rejection.status == 401) {
+            $rootScope.$currentUser = null;
+          }
+          return $q.reject(rejection);
+<% } -%>
         }
       }
     }])
@@ -289,7 +328,66 @@ module
 
       return resource;
     };
-  }]);
+<% if (hasUserModel) { -%>
+  }])
+  .run(['$rootScope', 'User', function($rootScope, User) {
+    /**
+     * @ngdoc object
+     * @name ng.$rootScope
+     * @description
+     *
+     * LoopBack's extensions of `$rootScope` object.
+     */
+
+    /**
+     * @ngdoc property
+     * @name ng.$rootScope#$currentUser
+     * @propertyOf ng.$rootScope
+     *
+     * @description
+     *
+     * The {@link <%- moduleName %>.User `User`} resource of the user
+     * that is currently logged in, or `null`.
+     *
+     * You should always call
+     * {@link ng.$rootScope#$ensureCurrentUser `$rootScope.$ensureCurrentUser()`}
+     * before accessing this property.
+     *
+     */
+    $rootScope.$currentUser = null;
+
+    /**
+     * @ngdoc method
+     * @name ng.$rootScope#$ensureCurrentUser
+     * @methodOf ng.$rootScope
+     *
+     * @description
+     *
+     * This method ensures that
+     * {@link ng.$rootScope#$currentUser `$rootScope.$currentUser`} is set.
+     *
+     *  - When `$currentUser` is null,
+     *    {@link <%- moduleName %>.User#getCurrent `User.getCurrent()`}
+     *    is called to set it up.
+     *  - When there is no user logged in, `User.getCurrent()` will fail with
+     *    401 Unauthorized, which should trigger redirect to the login page in
+     *    most applications.
+     *  - When the value was already filled by a previous call
+     *    of `$ensureCurrentUser` or
+     *    {@link <%- moduleName %>.User#login `User.login`},
+     *    then the call is a no-op.
+     *
+     * @return {Promise} Promise that is resolved with the User resource once it
+     *   is available. The promise is usually the value of
+     *   `$rootScope.$currentUser.$promise`.
+     */
+    $rootScope.$ensureCurrentUser = function() {
+      if (!$rootScope.$currentUser)
+        $rootScope.$currentUser = User.getCurrent();
+      return $rootScope.$currentUser.$promise;
+    };
+<% } -%>
+  }])
 <%
 function getJsDocType(arg) {
   var type = arg.type == 'any' ? '*' : arg.type;
