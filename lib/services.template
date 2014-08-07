@@ -1,6 +1,8 @@
 (function(window, angular, undefined) {'use strict';
 
-var urlBase = <%-: urlBase | q %>;
+var
+  urlBase = <%-: urlBase | q %>,
+  authHeader = "authorization";
 
 /**
  * @ngdoc overview
@@ -293,7 +295,7 @@ module
       return {
         'request': function(config) {
           if (LoopBackAuth.accessTokenId) {
-            config.headers.authorization = LoopBackAuth.accessTokenId;
+            config.headers[authHeader] = LoopBackAuth.accessTokenId;
           } else if (config.__isGetCurrentUser__) {
             // Return a stub 401 error for User.getCurrent() when
             // there is no user logged in
@@ -318,6 +320,16 @@ module
      */
     this.setUrlBase = function(url) {
       urlBase = url;
+    };
+
+    /**
+     * @ngdoc method
+     * @name lbServices.LoopBackResourceProvider#setAuthHeader
+     * @methodOf lbServices.LoopBackResourceProvider
+     * @param {String} header
+     */
+    this.setAuthHeader = function(header) {
+      authHeader = header;
     };
 
     this.$get = ['$resource', function($resource) {
