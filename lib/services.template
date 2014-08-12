@@ -2,7 +2,7 @@
 
 var
   urlBase = <%-: urlBase | q %>,
-  authHeader = "authorization";
+  authHeader = "X-Access-Token";
 
 /**
  * @ngdoc overview
