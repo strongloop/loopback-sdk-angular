@@ -2,6 +2,15 @@ define(['angular', 'given', 'util'], function(angular, given, util) {
   'use strict';
 
   describe('services', function() {
+    describe('LoopBackResourceProvider', function() {
+      it('can configure urlBase');
+      it('can configure authorization header');
+    });
+
+    describe('LoopBackAuthRequestInterceptor', function() {
+      it('intercepts only configured urlBase requests');
+    });
+
     describe('MyModel $resource', function() {
       var $injector, MyModel;
       before(function() {
