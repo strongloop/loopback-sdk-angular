@@ -3,10 +3,35 @@ define(['angular', 'given', 'util'], function(angular, given, util) {
 
   describe('services', function() {
 
-    describe('LoopBackResourceProvider', function() {
+    describe('urlBase and authHeader customization', function() {
 
       var moduleName = 'loopbackServiceProviderTest',
           loopBackResourceProvider,
+          httpProvider,
+          // create http request interceptor to test urlBase
+          setupHttpTestRequestInterceptor = function() {
+            angular.module(moduleName)
+              .config(function($httpProvider) {
+                $httpProvider.interceptors.push('HttpTestRequestInterceptor');
+              })
+              .factory('HttpTestRequestInterceptor', function($q) {
+                return {
+                  'request': function(config) {
+                    var defer = $q.defer();
+                    // set a promise as timeout to avoid
+                    // unnecessary request
+                    config.timeout = defer.promise;
+                    defer.resolve();
+                    // as soon as the promise is resolved
+                    // the resource promise will fail due
+                    // to timeout, then the fail handler will
+                    // have all the config data to make
+                    // the proper assertions.
+                    return config;
+                  }
+                };
+              });
+          },
           createInjector,
           $injector;
 
@@ -20,8 +45,9 @@ define(['angular', 'given', 'util'], function(angular, given, util) {
           })
           .then(function(_createInjector) {
             angular.module(moduleName)
-              .config(function(LoopBackResourceProvider) {
+              .config(function(LoopBackResourceProvider, $httpProvider) {
                 loopBackResourceProvider = LoopBackResourceProvider;
+                httpProvider = $httpProvider;
               });
             createInjector = _createInjector;
           });
@@ -31,57 +57,100 @@ define(['angular', 'given', 'util'], function(angular, given, util) {
         $injector = createInjector();
       });
 
-      it('has setUrlBase method', function() {
-        expect(loopBackResourceProvider).to.have.property('setUrlBase');
+      describe('LoopBackResourceProvider', function() {
+
+        it('has setUrlBase method', function() {
+          expect(loopBackResourceProvider).to.have.property('setUrlBase');
+        });
+
+        it('has setAuthHeader method', function() {
+          expect(loopBackResourceProvider).to.have.property('setAuthHeader');
+        });
+
+        it('can configure urlBase', function() {
+
+          var urlBase = 'http://test.urlbase';
+
+          setupHttpTestRequestInterceptor();
+
+          // create injector (it will trigger angular config)
+          var $injector = createInjector();
+
+          // set custom urlBase to loopBackResourceProvider
+          // before getting the resource "MyModel"
+          loopBackResourceProvider.setUrlBase(urlBase);
+
+          // make call to MyModel to check if url is properly configured
+          // it will be intercepted by HttpTestRequestInterceptor
+          return $injector.get('MyModel').count().$promise.catch(
+            function(req) {
+              var config = req.config;
+              expect(config.url.substr(0, urlBase.length)).to.equal(urlBase);
+            }
+          );
+
+        });
+
+        it('can configure authorization header');
+
       });
 
-      it('has setAuthHeader method', function() {
-        expect(loopBackResourceProvider).to.have.property('setAuthHeader');
-      });
+      describe('LoopBackAuthRequestInterceptor', function() {
 
-      it('can configure urlBase', function() {
+        it('should be configured as an $httpProvider\'s interceptor',
+          function() {
+            expect(httpProvider.interceptors)
+              .to.contain('LoopBackAuthRequestInterceptor');
+          }
+        );
 
-        var urlBase = 'http://test.customurl';
+        it('intercepts only configured urlBase requests', function() {
 
-        // create http request interceptor to test urlBase
-        angular.module(moduleName)
-          .config(function($httpProvider) {
-            $httpProvider.interceptors.push('HttpTestRequestInterceptor');
-          })
-          .factory('HttpTestRequestInterceptor', function($q) {
-            return {
-              'request': function(config) {
-                var defer = $q.defer();
-                // set a promise as timeout, it will be resolved as soon
-                // as the assertion is done and it is not necessary to do the request.
-                config.timeout = defer.promise;
-                expect(config.url.substr(0, urlBase.length)).to.equal(urlBase);
-                // resolving the promise cancels the request
-                defer.resolve();
-                return config;
+          var urlBase = 'http://test.urlbase',
+              nonUrlBase = 'http://test.nonurlbase',
+              authHeader = 'X-Test-Token',
+              accessTokenId = '12345';
+
+          setupHttpTestRequestInterceptor();
+
+          $injector = createInjector();
+
+          // set custom urlBase and authHeader
+          loopBackResourceProvider.setUrlBase(urlBase);
+          loopBackResourceProvider.setAuthHeader(authHeader);
+
+          // set custom accessTokenId
+          var auth = $injector.get('LoopBackAuth');
+          auth.accessTokenId = accessTokenId;
+
+          var MyModel = $injector.get('MyModel');
+          var $q = $injector.get('$q');
+          var $http = $injector.get('$http');
+
+          // make two requests
+          // 1. request with MyModel.count which is a $resource using urlBase
+          // 2. request with $http service to a nonUrlBase
+          return $q.all([
+            $injector.get('MyModel').count().$promise.catch(function(req) {
+                // when the request points to the same urlBase
+                // it should contain accessTokenId in the
+                // configured authHeader
+                expect(req.config.headers[authHeader])
+                  .to.equal(accessTokenId);
               }
-            };
-          });
+            ),
+            $http.get(nonUrlBase).catch(function(req) {
+                // when the request points to a non urlBase
+                // domain it should not have authHeader
+                expect(req.config.headers[authHeader])
+                  .to.equal(undefined);
+              }
+            )
+          ]);
 
-        // create injector (it will trigger angular config)
-        var $injector = createInjector();
-
-        // set custom urlBase to loopBackResourceProvider before getting the resource "MyModel"
-        loopBackResourceProvider.setUrlBase(urlBase);
-
-        // make call to MyModel to check if url is properly configured
-        // it will be intercepted by HttpTestRequestInterceptor
-        $injector.get('MyModel')
-          .count()
-          .$promise;
+        });
       });
 
-      it('can configure authorization header');
-
-    });
-
-    describe('LoopBackAuthRequestInterceptor', function() {
-      it('intercepts only configured urlBase requests');
     });
 
     describe('MyModel $resource', function() {
