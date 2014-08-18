@@ -6,8 +6,8 @@ define(['angular', 'given', 'util'], function(angular, given, util) {
     describe('LoopBackResourceProvider', function() {
 
       var moduleName = 'loopbackServiceProviderTest',
-          loopBackResource,
-          $injector;
+          loopBackResourceProvider,
+          _createInjector;
 
       before(function() {
         return given.servicesForLoopBackApp(
@@ -19,22 +19,59 @@ define(['angular', 'given', 'util'], function(angular, given, util) {
           })
           .then(function(createInjector) {
             angular.module(moduleName)
-            .config(function(LoopBackResourceProvider) {
-              loopBackResource = LoopBackResourceProvider;
-            });
-            $injector = createInjector();
+              .config(function(LoopBackResourceProvider) {
+                loopBackResourceProvider = LoopBackResourceProvider;
+              });
+            _createInjector = createInjector;
           });
       });
 
       it('has setUrlBase method', function() {
-        expect(loopBackResource).to.have.property('setUrlBase');
+        var $injector = _createInjector();
+        expect(loopBackResourceProvider).to.have.property('setUrlBase');
       });
 
       it('has setAuthHeader method', function() {
-        expect(loopBackResource).to.have.property('setAuthHeader');
+        var $injector = _createInjector();
+        expect(loopBackResourceProvider).to.have.property('setAuthHeader');
       });
 
-      it('can configure urlBase');
+      it('can configure urlBase', function() {
+
+        var urlBase = 'http://test.customurl';
+
+        // create http request interceptor to test urlBase
+        angular.module(moduleName)
+          .config(function($httpProvider) {
+            $httpProvider.interceptors.push('HttpTestRequestInterceptor');
+          })
+          .factory('HttpTestRequestInterceptor', function($q) {
+            return {
+              'request': function(config) {
+                var defer = $q.defer();
+                // set a promise as timeout, it will be resolved as soon
+                // as the assertion is done and it is not necessary to do the request.
+                config.timeout = defer.promise;
+                expect(config.url.substr(0, urlBase.length)).to.equal(urlBase);
+                // resolving the promise cancels the request
+                defer.resolve();
+                return config;
+              }
+            };
+          });
+
+        // create injector (it will trigger angular config)
+        var $injector = _createInjector();
+
+        // set custom urlBase to loopBackResourceProvider before getting the resource "MyModel"
+        loopBackResourceProvider.setUrlBase(urlBase);
+
+        // make call to MyModel to check if url is properly configured
+        // it will be intercepted by HttpTestRequestInterceptor
+        $injector.get('MyModel')
+          .count()
+          .$promise;
+      });
 
       it('can configure authorization header');
 
