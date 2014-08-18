@@ -7,7 +7,8 @@ define(['angular', 'given', 'util'], function(angular, given, util) {
 
       var moduleName = 'loopbackServiceProviderTest',
           loopBackResourceProvider,
-          _createInjector;
+          createInjector,
+          $injector;
 
       before(function() {
         return given.servicesForLoopBackApp(
@@ -17,22 +18,24 @@ define(['angular', 'given', 'util'], function(angular, given, util) {
             },
             name: moduleName
           })
-          .then(function(createInjector) {
+          .then(function(_createInjector) {
             angular.module(moduleName)
               .config(function(LoopBackResourceProvider) {
                 loopBackResourceProvider = LoopBackResourceProvider;
               });
-            _createInjector = createInjector;
+            createInjector = _createInjector;
           });
       });
 
+      beforeEach(function() {
+        $injector = createInjector();
+      });
+
       it('has setUrlBase method', function() {
-        var $injector = _createInjector();
         expect(loopBackResourceProvider).to.have.property('setUrlBase');
       });
 
       it('has setAuthHeader method', function() {
-        var $injector = _createInjector();
         expect(loopBackResourceProvider).to.have.property('setAuthHeader');
       });
 
@@ -61,7 +64,7 @@ define(['angular', 'given', 'util'], function(angular, given, util) {
           });
 
         // create injector (it will trigger angular config)
-        var $injector = _createInjector();
+        var $injector = createInjector();
 
         // set custom urlBase to loopBackResourceProvider before getting the resource "MyModel"
         loopBackResourceProvider.setUrlBase(urlBase);
