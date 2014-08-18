@@ -2,9 +2,42 @@ define(['angular', 'given', 'util'], function(angular, given, util) {
   'use strict';
 
   describe('services', function() {
+
     describe('LoopBackResourceProvider', function() {
+
+      var moduleName = 'loopbackServiceProviderTest',
+          loopBackResource,
+          $injector;
+
+      before(function() {
+        return given.servicesForLoopBackApp(
+          {
+            models: {
+              MyModel: { name: { type: String, required: true } }
+            },
+            name: moduleName
+          })
+          .then(function(createInjector) {
+            angular.module(moduleName)
+            .config(function(LoopBackResourceProvider) {
+              loopBackResource = LoopBackResourceProvider;
+            });
+            $injector = createInjector();
+          });
+      });
+
+      it('has setUrlBase method', function() {
+        expect(loopBackResource).to.have.property('setUrlBase');
+      });
+
+      it('has setAuthHeader method', function() {
+        expect(loopBackResource).to.have.property('setAuthHeader');
+      });
+
       it('can configure urlBase');
+
       it('can configure authorization header');
+
     });
 
     describe('LoopBackAuthRequestInterceptor', function() {
