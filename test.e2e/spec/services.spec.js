@@ -5,9 +5,10 @@ define(['angular', 'given', 'util'], function(angular, given, util) {
 
     describe('urlBase and authHeader customization', function() {
 
-      var moduleName = 'urlBaseAndAuthHeaderCustomization',
-          loopBackResourceProvider,
-          httpProvider,
+      var createInjector, $injector, MyModel,
+          httpProvider, loopBackResourceProvider,
+          moduleName = 'urlBaseAndAuthHeaderCustomization',
+          
           // create http request interceptor to test urlBase
           setupHttpTestRequestInterceptor = function() {
             angular.module(moduleName)
@@ -31,9 +32,7 @@ define(['angular', 'given', 'util'], function(angular, given, util) {
                   }
                 };
               });
-          },
-          createInjector,
-          $injector;
+          };
 
       before(function() {
         return given.servicesForLoopBackApp(
@@ -55,6 +54,7 @@ define(['angular', 'given', 'util'], function(angular, given, util) {
 
       beforeEach(function() {
         $injector = createInjector();
+        MyModel = $injector.get('MyModel');
       });
 
       describe('LoopBackResourceProvider', function() {
@@ -68,13 +68,9 @@ define(['angular', 'given', 'util'], function(angular, given, util) {
         });
 
         it('can configure urlBase', function() {
-
           var urlBase = 'http://test.urlbase';
 
           setupHttpTestRequestInterceptor();
-
-          // create injector (it will trigger angular config)
-          var $injector = createInjector();
 
           // set custom urlBase to loopBackResourceProvider
           // before getting the resource "MyModel"
@@ -82,7 +78,7 @@ define(['angular', 'given', 'util'], function(angular, given, util) {
 
           // make call to MyModel to check if url is properly configured
           // it will be intercepted by HttpTestRequestInterceptor
-          return $injector.get('MyModel').count().$promise.catch(
+          return MyModel.count().$promise.catch(
             function(req) {
               var config = req.config;
               expect(config.url.substr(0, urlBase.length)).to.equal(urlBase);
@@ -91,7 +87,17 @@ define(['angular', 'given', 'util'], function(angular, given, util) {
 
         });
 
-        it('can configure authorization header');
+        it('can configure authorization header', function() {
+          setupHttpTestRequestInterceptor();
+          loopBackResourceProvider.setAuthHeader('X-Awesome-Token');
+
+          return MyModel.query().$promise.catch(
+            function(req) {
+              expect(req.config.headers).to
+                .have.property('X-Awesome-Token');
+            }
+          );
+        });
 
       });
 
