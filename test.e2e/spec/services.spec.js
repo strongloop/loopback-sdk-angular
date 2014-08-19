@@ -5,7 +5,7 @@ define(['angular', 'given', 'util'], function(angular, given, util) {
 
     describe('urlBase and authHeader customization', function() {
 
-      var moduleName = 'loopbackServiceProviderTest',
+      var moduleName = 'urlBaseAndAuthHeaderCustomization',
           loopBackResourceProvider,
           httpProvider,
           // create http request interceptor to test urlBase
@@ -17,11 +17,11 @@ define(['angular', 'given', 'util'], function(angular, given, util) {
               .factory('HttpTestRequestInterceptor', function($q) {
                 return {
                   'request': function(config) {
-                    var defer = $q.defer();
+                    var deferred = $q.defer();
                     // set a promise as timeout to avoid
                     // unnecessary request
-                    config.timeout = defer.promise;
-                    defer.resolve();
+                    config.timeout = deferred.promise;
+                    deferred.resolve();
                     // as soon as the promise is resolved
                     // the resource promise will fail due
                     // to timeout, then the fail handler will
@@ -38,10 +38,10 @@ define(['angular', 'given', 'util'], function(angular, given, util) {
       before(function() {
         return given.servicesForLoopBackApp(
           {
+            name: moduleName,
             models: {
               MyModel: { name: { type: String, required: true } }
-            },
-            name: moduleName
+            }
           })
           .then(function(_createInjector) {
             angular.module(moduleName)
