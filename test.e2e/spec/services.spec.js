@@ -59,6 +59,8 @@ define(['angular', 'given', 'util'], function(angular, given, util) {
       });
 
       beforeEach(function() {
+        localStorage.clear();
+        sessionStorage.clear();
         // create injector, it will run angular module configuration
         // to setup all the needed providers
         // (loopBackResourceProvider, httpProvider)
@@ -109,9 +111,14 @@ define(['angular', 'given', 'util'], function(angular, given, util) {
         });
 
         it('can configure authorization header', function() {
-          var authToken = 'X-Awesome-Token';
+          var authToken = 'X-Awesome-Token',
+              accessTokenId = '12345';
           loopBackResourceProvider.setAuthHeader(authToken);
           var $injector = createInjector();
+
+          // set custom accessTokenId
+          var auth = $injector.get('LoopBackAuth');
+          auth.accessTokenId = accessTokenId;
 
           var MyModel = $injector.get('MyModel');
           return MyModel.count().$promise.then(
