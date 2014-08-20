@@ -78,9 +78,8 @@ define(['angular', 'given', 'util'], function(angular, given, util) {
         it('can configure urlBase', function() {
           // setup angular configuration (requires to recreate the injector, so
           // it can get the new required config)
-          // 1. configure HttpTestRequestInterceptor
-          // 2. set a new urlBase to loopBackResourceProvider
-          // 3. recreate the injector
+          // 1. set a new urlBase to loopBackResourceProvider
+          // 2. recreate the injector
           var urlBase = 'http://test.urlbase';
           loopBackResourceProvider.setUrlBase(urlBase);
           var $injector = createInjector();
