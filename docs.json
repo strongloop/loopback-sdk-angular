@@ -1,0 +1,8 @@
+{
+  "title": "LoopBack AngularJS API",
+  "content": [
+    { "title": "Built-in Models", "depth": 2 },
+    "apidocs/lb-services.js"
+  ],
+  "init": "node ./apidocs/describe-builtin-models.js"
+}
