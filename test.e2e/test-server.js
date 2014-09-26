@@ -100,7 +100,7 @@ masterApp.post('/setup', function(req, res, next) {
   setupFn(lbApp, function(err, data) {
     if (err) {
       console.error('app setup function failed', err);
-      res.send(500, err);
+      res.status(500).send(err);
       return;
     }
 
@@ -119,7 +119,7 @@ masterApp.post('/setup', function(req, res, next) {
     servicesScript += '\nangular.module(' + JSON.stringify(name) + ')' +
       '.value("testData", ' + JSON.stringify(data, null, 2) + ');\n';
 
-    res.send(200, { servicesUrl: baseUrl + 'services?' + name });
+    res.status(200).send({ servicesUrl: baseUrl + 'services?' + name });
   }.bind(this));
 
 });
