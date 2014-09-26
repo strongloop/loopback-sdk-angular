@@ -1,3 +1,9 @@
+// Dependencies
+// Note:
+//  * The below values are relevant for server-side
+//  * For client-side, dependencies must be declared in model-config.json file
+//  * And they have to be available as an Angular provider in your app
+var _ = require('lodash');
 // Description: Extend `MyModel` model in Angular client generated service
 //              with static and prototype methods/properties
 //
@@ -39,6 +45,8 @@ module.exports = function (MyModel) {
    *   from the server.
    */
   MyModel.findTwo = function (successCb, errorCb) {
+    // Just to test dependency on lodash :
+    _.noop();
     return MyModel.find({filter: {limit: 2}}, function(items, headers) {
       if (successCb)
         successCb(items, headers);

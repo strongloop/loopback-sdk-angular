@@ -17,6 +17,7 @@ requirejs.config({
     angular: 'bower_components/angular/angular',
     angularResource: 'bower_components/angular-resource/angular-resource',
     angularMocks: 'bower_components/angular-mocks/angular-mocks',
+    lodash: 'bower_components/lodash/dist/lodash',
     given: 'test.e2e/given',
     util: 'test.e2e/util'
   },
@@ -31,6 +32,7 @@ requirejs.config({
       deps: ['angular'],
       exports: 'angular.mock'
     },
+    'lodash': { exports: '_' },
     'chai': { exports: 'chai' }
   },
 
@@ -43,4 +45,9 @@ requirejs.config({
 
 require(['chai'], function(chai) {
   window.expect = chai.expect;
+});
+
+require(['angular', 'lodash'], function(angular, _) {
+  // Make lodash module available as an Angular dependency in the app
+  angular.module('lodash', []).constant('_', _);
 });

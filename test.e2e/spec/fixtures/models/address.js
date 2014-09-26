@@ -1,3 +1,9 @@
+// Dependencies
+// Note:
+//  * The below values are relevant for server-side
+//  * For client-side, dependencies must be declared in model-config.json file
+//  * And they have to be available as an Angular provider in your app
+var _ = require('lodash');
 // Description: Extend `Address` model in Angular client generated service
 //              with static and prototype methods/properties
 //
@@ -34,6 +40,8 @@ module.exports = function (Address) {
    * @return {String} Complete address
    */
   Address.prototype.getFullAddress = function () {
+    // Just to test dependency on lodash :
+    _.noop();
     return this.recipient + ' ' + Address.countryCodes[this.country];
   };
 

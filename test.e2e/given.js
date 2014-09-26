@@ -60,7 +60,8 @@ define(['angular', 'angularMocks', 'angularResource'], function(angular) {
       .then(injectScriptAtUrl)
       .then(function() {
         return function createTestInjector() {
-          var injector = angular.injector(['ng', 'ngMockE2E', options.name]);
+          var injector = angular.injector(['ng', 'ngMockE2E',
+                                           'lodash', options.name]);
           // Setup the mocked http provider to pass all $http requests
           // to our LoopBack server
           var $httpBackend = injector.get('$httpBackend');

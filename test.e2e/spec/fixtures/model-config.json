@@ -5,7 +5,8 @@
     ]
   },
   "MyModel": {
-    "dataSource": "remote"
+    "dataSource": "remote",
+    "dependencies": ["_"]
   },
   "lower-case-not-an-identifier": {
     "dataSource": "remote"
@@ -29,6 +30,7 @@
     "dataSource": "remote"
   },
   "Address": {
-    "dataSource": null
+    "dataSource": null,
+    "dependencies": ["_"]
   }
 }
