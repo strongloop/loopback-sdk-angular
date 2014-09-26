@@ -292,6 +292,51 @@ define(['angular', 'given', 'util'], function(angular, given, util) {
       });
     });
 
+    describe('MyModel $resource with extended custom logic', function() {
+      var $injector, MyModel;
+      before(function() {
+        return given.servicesForLoopBackApp(
+          {
+            models: {
+              MyModel: {
+                name: { type: String, required: true } ,
+                first: { type: Number  },
+                second: { type: Number  }
+              }
+            }
+          })
+          .then(function(createInjector) {
+            $injector = createInjector();
+            MyModel = $injector.get('MyModel');
+          });
+      });
+
+      it('has both extended static method and property', function() {
+        var staticMethod = MyModel.findTwo;
+        expect(staticMethod).to.be.a('Function');
+        expect(MyModel).to.have.property('STATUS', 1);
+      });
+
+      it('instance can use extended prototype method', function() {
+        return MyModel.create({first: 1, second: 2}).$promise
+        .then(function() {
+          return MyModel.create({first: 1, second: 2}).$promise;
+        })
+        .then(function() {
+          return MyModel.create({first: 1, second: 2}).$promise;
+        })
+        .then(function() {
+          return MyModel.findTwo().$promise;
+        })
+        .then(function(items) {
+          expect(items.length).to.equal(2);
+          expect(items[0].getTotal).to.be.a('Function');
+          expect(items[0].getTotal()).to.equal(3);
+        })
+        .catch(util.throwHttpError);
+      });
+    });
+
     describe('$resource for model with funky name', function() {
       var $injector;
       before(function() {
@@ -330,7 +375,7 @@ define(['angular', 'given', 'util'], function(angular, given, util) {
                   }
                 }
               },
-              product: {
+              Product: {
                 properties: {
                   model: String
                 }

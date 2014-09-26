@@ -3,7 +3,7 @@ The test server is an HTTP service allowing
 front-end tests running in a browser to setup
 a custom LoopBack instance and generate & access lb-services.js
 */
-
+var path = require('path');
 var express = require('express');
 var loopback = require('loopback');
 var generator = require('..');
@@ -105,7 +105,12 @@ masterApp.post('/setup', function(req, res, next) {
     }
 
     try {
-      servicesScript = generator.services(lbApp, name, apiUrl);
+      servicesScript = generator.services(
+        lbApp,
+        name,
+        apiUrl,
+        path.join(__dirname, 'spec/fixtures/model-config.json')
+      );
     } catch (err) {
       console.error('Cannot generate services script:', err.stack);
       servicesScript = 'throw new Error("Error generating services script.");';
