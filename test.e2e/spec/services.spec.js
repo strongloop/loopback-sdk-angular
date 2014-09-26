@@ -337,6 +337,32 @@ define(['angular', 'given', 'util'], function(angular, given, util) {
       });
     });
 
+    describe('Address local model with extended custom logic', function() {
+      var $injector, Address;
+      before(function() {
+        return given.servicesForLoopBackApp(
+          {
+            models: {}
+          })
+          .then(function(createInjector) {
+            $injector = createInjector();
+            Address = $injector.get('Address');
+          });
+      });
+
+      it('has an extended static property', function() {
+        expect(Address).to.have.property('countryCodes');
+      });
+
+      it('instance can use extended prototype method', function() {
+        var address = new Address();
+        address.recipient = 'Thomas';
+        address.country = 'fr';
+        expect(address.getFullAddress).to.be.a('Function');
+        expect(address.getFullAddress()).to.equal('Thomas France');
+      });
+    });
+
     describe('$resource for model with funky name', function() {
       var $injector;
       before(function() {

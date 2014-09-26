@@ -27,5 +27,8 @@
   },
   "Country": {
     "dataSource": "remote"
+  },
+  "Address": {
+    "dataSource": null
   }
 }
