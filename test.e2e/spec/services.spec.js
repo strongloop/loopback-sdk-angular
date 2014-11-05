@@ -438,6 +438,16 @@ define(['angular', 'given', 'util'], function(angular, given, util) {
         expect(Product.getCurrent).to.equal(undefined);
       });
 
+      it('makes a correct HTTP request on User.getCurrent', function() {
+        return givenLoggedInUser()
+          .then(function(){
+            return Customer.getCurrent().$promise;
+          })
+          .then(function(){}, function() {
+            throw new Error('It should not fail');
+          });
+      });
+
       it('sends User.login with include=user to by default', function() {
         return givenLoggedInUser()
           .then(function(token) {
