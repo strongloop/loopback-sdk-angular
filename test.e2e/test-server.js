@@ -3,7 +3,7 @@ The test server is an HTTP service allowing
 front-end tests running in a browser to setup
 a custom LoopBack instance and generate & access lb-services.js
 */
-
+var path = require('path');
 var express = require('express');
 var loopback = require('loopback');
 var generator = require('..');
@@ -100,12 +100,17 @@ masterApp.post('/setup', function(req, res, next) {
   setupFn(lbApp, function(err, data) {
     if (err) {
       console.error('app setup function failed', err);
-      res.send(500, err);
+      res.status(500).send(err);
       return;
     }
 
     try {
-      servicesScript = generator.services(lbApp, name, apiUrl);
+      servicesScript = generator.services(
+        lbApp,
+        name,
+        apiUrl,
+        path.join(__dirname, 'spec/fixtures/model-config.json')
+      );
     } catch (err) {
       console.error('Cannot generate services script:', err.stack);
       servicesScript = 'throw new Error("Error generating services script.");';
@@ -114,7 +119,7 @@ masterApp.post('/setup', function(req, res, next) {
     servicesScript += '\nangular.module(' + JSON.stringify(name) + ')' +
       '.value("testData", ' + JSON.stringify(data, null, 2) + ');\n';
 
-    res.send(200, { servicesUrl: baseUrl + 'services?' + name });
+    res.status(200).send({ servicesUrl: baseUrl + 'services?' + name });
   }.bind(this));
 
 });

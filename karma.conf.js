@@ -24,7 +24,7 @@ module.exports = function(config) {
 
     // list of files to exclude
     exclude: [
-      // 'test/**/*.js'
+      'test.e2e/spec/fixtures/**/*.js'
     ],
 
 

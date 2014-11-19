@@ -1,0 +1,36 @@
+{
+  "_meta": {
+    "sources": [
+      "./models"
+    ]
+  },
+  "MyModel": {
+    "dataSource": "remote",
+    "dependencies": ["_"]
+  },
+  "lower-case-not-an-identifier": {
+    "dataSource": "remote"
+  },
+  "Customer": {
+    "dataSource": "remote"
+  },
+  "User": {
+    "dataSource": "remote"
+  },
+  "Product": {
+    "dataSource": "remote"
+  },
+  "Category": {
+    "dataSource": "remote"
+  },
+  "Town": {
+    "dataSource": "remote"
+  },
+  "Country": {
+    "dataSource": "remote"
+  },
+  "Address": {
+    "dataSource": null,
+    "dependencies": ["_"]
+  }
+}
