@@ -18,3 +18,7 @@ exports.moduleName = function(script) {
 exports.baseUrl = function(script) {
   return parse(script, /var urlBase = "([^"]*)";/);
 };
+
+exports.ngNameCase = function(script) {
+  return parse(script, /var ngNameCase = "upperCaseFirst";/);
+};

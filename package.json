@@ -49,6 +49,7 @@
     "loopback-datasource-juggler": "^2.0",
     "mocha": "~1.18.0",
     "morgan": "^1.2",
-    "requirejs": "^2.1.9"
+    "requirejs": "^2.1.9",
+    "change-case": "^2.2.0"
   }
 }
