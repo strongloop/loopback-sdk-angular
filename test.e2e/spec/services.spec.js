@@ -681,7 +681,8 @@ define(['angular', 'given', 'util'], function(angular, given, util) {
       });
 
       it('unlinks a model', function() {
-        var unlnk = Product.categories.unlink({ id: testData.product.id, fk: testData.category.id});
+        var unlnk = Product.categories.unlink(
+          { id: testData.product.id, fk: testData.category.id});
         unlnk.$promise.then(function(data) {
           var list = Product.categories({ id: testData.product.id });
           return list.$promise.then(function() {
@@ -695,7 +696,8 @@ define(['angular', 'given', 'util'], function(angular, given, util) {
       it('links a model', function() {
         var cat = Category.create({ name: 'linked-cat' });
         cat.$promise.then(function() {
-          var lnk = Product.categories.link({ id: testData.product.id, fk: cat.id});
+          var lnk = Product.categories.link(
+            { id: testData.product.id, fk: cat.id});
           lnk.$promise.then(function(data) {
             var list = Product.categories({ id: testData.product.id });
             return list.$promise.then(function() {
@@ -704,7 +706,7 @@ define(['angular', 'given', 'util'], function(angular, given, util) {
             }, function(fault) {
               console.log('linking to category failed', fault);
           });
-        }, function(fault){console.log('creating category failed', fault)});
+        }, function(fault){console.log('creating category failed', fault);});
       });
       // Skipped due to strongloop/loopback-datasource-juggler#95
       it.skip('removes all related models', function() {
