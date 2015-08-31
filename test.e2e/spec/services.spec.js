@@ -111,6 +111,22 @@ define(['angular', 'given', 'util'], function(angular, given, util) {
             }
           );
         });
+        
+        it('has getUrlBase method', function() {
+          expect(loopBackResourceProvider).to.have.property('getUrlBase');
+        });
+
+        it('can get urlBase', function() {
+          // setup angular configuration (requires to recreate the injector, so
+          // it can get the new required config)
+          // 1. set a new urlBase to loopBackResourceProvider
+          // 2. recreate the injector
+          var urlBase = 'http://test.urlbase';
+          loopBackResourceProvider.setUrlBase(urlBase);
+          var base = loopBackResourceProvider.getUrlBase();
+
+          return expect(base).to.equal(urlBase);
+        });
 
         it('has setUrlBase method', function() {
           expect(loopBackResourceProvider).to.have.property('setUrlBase');
