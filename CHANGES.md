@@ -1,3 +1,27 @@
+2015-09-01, Version 1.5.0
+=========================
+
+ * Add loopBackResourceProvider.getUrlBase() (Jonathan Sheely)
+
+ * fixed the hard coded 'lbServices' in the documentation (Roi Ezra)
+
+
+2015-08-10, Version 1.4.1
+=========================
+
+ * Support remote methods named like scope methods (kennethlynne)
+
+
+2015-06-17, Version 1.4.0
+=========================
+
+ * Add createMany functionallity (Jonathan Casarrubias)
+
+ * Support "accepts" arguments mapped to URL params (Matt McCabe)
+
+ * Fix bad CLA URL in CONTRIBUTING.md (Ryan Graham)
+
+
 2014-11-19, Version 1.3.7
 =========================
 

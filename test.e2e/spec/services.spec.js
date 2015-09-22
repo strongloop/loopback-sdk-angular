@@ -112,6 +112,18 @@ define(['angular', 'given', 'util'], function(angular, given, util) {
           );
         });
 
+        it('has getUrlBase method', function() {
+          expect(loopBackResourceProvider).to.have.property('getUrlBase');
+        });
+
+        it('can get urlBase', function() {
+          var urlBase = 'http://test.urlbase';
+          loopBackResourceProvider.setUrlBase(urlBase);
+          var base = loopBackResourceProvider.getUrlBase();
+
+          return expect(base).to.equal(urlBase);
+        });
+
         it('has setUrlBase method', function() {
           expect(loopBackResourceProvider).to.have.property('setUrlBase');
         });
@@ -223,6 +235,27 @@ define(['angular', 'given', 'util'], function(angular, given, util) {
         });
       });
 
+      it('can create multiple new resources', function() {
+        var arr = MyModel.createMany([
+         { name: 'one', multi: true },
+         { name: 'two', multi: true },
+         { name: 'three', multi: true }
+        ],
+        function() {
+          expect(arr).to.have.property('length', 3);
+        });
+
+      return arr.$promise.then(function() {
+        var found = MyModel.find({
+          filter: { where: { multi: true } } },
+          function() {
+            var namesFound = found.map(function(it) { return it.name; });
+            expect(namesFound).to.eql(['one', 'two', 'three']);
+          });
+          return found.$promise;
+        });
+      });
+
       it('can save a new resource', function() {
         var obj = new MyModel();
         obj.name = 'new-saved';
@@ -273,6 +306,7 @@ define(['angular', 'given', 'util'], function(angular, given, util) {
         console.log('methods', methodNames);
         expect(methodNames).to.include.members([
           'create',
+          'createMany',
           'updateOrCreate',
           'upsert',
           'exists',
@@ -308,6 +342,43 @@ define(['angular', 'given', 'util'], function(angular, given, util) {
 
       it('has a factory name that starts with upper-case', function() {
         expect($injector.has('Lower-case-not-an-identifier')).to.equal(true);
+      });
+    });
+
+    describe('$resource for model with custom scope-like methods', function() {
+      var $injector;
+      before(function() {
+        return given.servicesForLoopBackApp(
+          {
+            models: {
+              'pretender': {},
+            },
+            setupFn: (function(app, cb) {
+              var Pretender = app.models.Pretender;
+              Pretender.prototype['__get__spaces'] = function(cb) {
+                cb(null, [1,2,3]);
+              };
+              Pretender.remoteMethod(
+                '__get__spaces',
+                {
+                  isStatic: false,
+                  http: { path: '/spaces', verb: 'get' },
+                  returns: { arg: 'spaces', type: 'array', root: true }
+                }
+              );
+              cb();
+            }).toString(),
+          })
+          .then(function(createInjector) {
+            $injector = createInjector();
+          });
+      });
+
+      it('has a client method generated', function() {
+        var Pretender = $injector.get('Pretender');
+        var methodNames = Object.keys(Pretender);
+        console.log('methods', methodNames);
+        expect(methodNames).to.include.members(['prototype$__get__spaces']);
       });
     });
 
@@ -643,6 +714,7 @@ define(['angular', 'given', 'util'], function(angular, given, util) {
         expect(Object.keys(Product.categories), 'Product.categories properties')
           .to.include.members([
             'create',
+            'createMany',
             'destroyAll',
             // new in loopback 2.0
             'destroyById',
@@ -676,6 +748,67 @@ define(['angular', 'given', 'util'], function(angular, given, util) {
             return list.$promise.then(function() {
               var names = list.map(function(c) { return c.name; });
               expect(names).to.eql([testData.category.name, cat.name]);
+            });
+          });
+      });
+
+      it('unlinks a model', function() {
+        return Product.categories.create(
+          { id: testData.product.id },
+          { name: 'cat-unlink' }
+        ).$promise
+          .then(function(cat) {
+            return Product.categories.unlink({
+              id: testData.product.id,
+              fk: cat.id
+            }).$promise;
+          })
+          .then(function() {
+            return Product.categories({ id: testData.product.id }).$promise;
+          })
+          .then(function(list) {
+            expect(list.map(propGetter('name'))).to.not.include('linked-cat');
+          });
+      });
+
+      it('links a model', function() {
+        return Category.create({ name: 'cat-link' })
+          .$promise
+          .then(function(cat) {
+            return Product.categories.link(
+              {
+                id: testData.product.id,
+                fk: cat.id
+              },
+              // IMPORTANT: we must pass an empty postData arg, otherwise
+              // both id and fk are sent in the request body and the "id" value
+              // is interpreted as the id of the record in the "trough" table
+              {}
+            ).$promise;
+          })
+          .then(function(link) {
+            return Product.categories({ id: testData.product.id }).$promise;
+          })
+          .then(function(list) {
+            expect(list.map(propGetter('name'))).to.include('cat-link');
+          });
+      });
+
+      it('creates multiple related models', function() {
+        var cats = Product.categories.createMany(
+          { id: testData.product.id },
+          [
+            { name: 'another-cat' },
+            { name: 'yet-another-cat' },
+            { name: 'last-cat' }
+          ],
+          function() {
+            expect(cats).to.have.property('length', 3);
+          });
+        return cats.$promise
+          .then(function() {
+            cats.forEach(function(cat){
+              expect(cat).to.be.an.instanceof(Category);
             });
           });
       });
@@ -781,4 +914,10 @@ define(['angular', 'given', 'util'], function(angular, given, util) {
       });
     });
   });
+
+  function propGetter(name) {
+    return function(obj) {
+      return obj[name];
+    };
+  }
 });
