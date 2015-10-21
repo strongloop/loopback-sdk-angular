@@ -1,3 +1,4 @@
+var generator = require('./lib/services');
 
-exports.services = require('./lib/services');
-exports.registry = require('./lib/registry');
+exports.services = generator.services;
+exports.registry = generator.registry;
