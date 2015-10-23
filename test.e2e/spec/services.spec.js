@@ -53,6 +53,11 @@ define(['angular', 'given', 'util'], function(angular, given, util) {
               // error handler
               function(req) {
                 var config = req.config;
+
+                if (config == null) {
+                  throw new Error('unable to get config from mock request');
+                }
+
                 // when request has been cancelled by HttpTestRequestInterceptor
                 // then do the assertion otherwise just fail
                 if (config.httpTestRequestInterceptor) {

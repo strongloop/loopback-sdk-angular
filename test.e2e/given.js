@@ -79,7 +79,7 @@ define(['angular', 'angularMocks', 'angularResource'], function(angular) {
 
   var namesUsed = {};
   function generateUniqueServiceName(base) {
-    if (!base) base = getFullSpecName() || 'lbServices';
+    if (!base) base = String(quickHash(getFullSpecName()) || 'lbServices');
 
     var candidate = base;
     var counter = 0;
@@ -88,6 +88,19 @@ define(['angular', 'angularMocks', 'angularResource'], function(angular) {
     }
     namesUsed[candidate] = true;
     return candidate;
+  }
+
+  function quickHash(str) {
+    var hash = 0;
+
+    if (str.length > 1) {
+      for (var i = str.length - 1; i >= 0; --i) {
+        hash = ((hash << 5) - hash) + str.charCodeAt(i);
+        hash |= 0;
+      }
+    }
+
+    return hash;
   }
 
   function getFullSpecName() {
