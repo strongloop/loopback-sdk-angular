@@ -474,26 +474,29 @@ define(['angular', 'given', 'util'], function(angular, given, util) {
       it('clears authentication data in local and session storage ' +
         'on logout when rememberMe=true and page has been reloaded after login',
       function() {
+        var prefix = '$LoopBack';
+
         return givenLoggedInUser(null, { rememberMe: true })
           .then(function() {
             // If page is reloaded or browser is closed and then reopened again
             // the Auth.rememberMe is set to undefined.
             var auth = $injector.get('LoopBackAuth');
             auth.rememberMe = undefined;
+            prefix = auth.prefix;
 
             return Customer.logout().$promise;
           })
           .then(function() {
             // Check that localStorage was cleared
-            expect(localStorage.getItem('$LoopBack$accessTokenId'),
+            expect(localStorage.getItem(prefix + '$accessTokenId'),
               'localStorage: accessTokenId').to.equal('');
-            expect(localStorage.getItem('$LoopBack$currentUserId'),
+            expect(localStorage.getItem(prefix + '$currentUserId'),
               'localStorage: currentUserId').to.equal('');
 
             // Check that sessionStorage was cleared
-            expect(sessionStorage.getItem('$LoopBack$accessTokenId'),
+            expect(sessionStorage.getItem(prefix + '$accessTokenId'),
               'sessionStorage: accessTokenId').to.equal('');
-            expect(sessionStorage.getItem('$LoopBack$currentUserId'),
+            expect(sessionStorage.getItem(prefix + '$currentUserId'),
               'sessionStorage: currentUserId').to.equal('');
           })
           .catch(util.throwHttpError);
