@@ -516,30 +516,6 @@ define(['angular', 'given', 'util'], function(angular, given, util) {
           });
       });
 
-      it('persists accessToken and currentUserId', function() {
-        return givenLoggedInUser('persisted@example.com')
-          .then(function() {
-            sessionStorage.clear(); // simulate browser restart
-            return getNew('Customer').getCurrent().$promise;
-          })
-          .then(function(user) {
-            expect(user.email).to.equal('persisted@example.com');
-          })
-          .catch(util.throwHttpError);
-      });
-
-      it('persists data in sessionStorage when rememberMe=false', function() {
-        return givenLoggedInUser(null, { rememberMe: false })
-          .then(function() {
-            localStorage.clear(); // ensure data is not stored in localStorage
-            return getNew('Customer').getCurrent().$promise;
-          })
-          .then(function() {
-            expect(true); // no-op, test passed
-          })
-          .catch(util.throwHttpError);
-      });
-
       it('adds getCurrent() to User model only', function() {
         var Product = $injector.get('Product');
         expect(Product.getCurrent).to.equal(undefined);
