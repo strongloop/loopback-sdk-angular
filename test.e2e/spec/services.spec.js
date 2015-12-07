@@ -155,32 +155,107 @@ define(['angular', 'given', 'util'], function(angular, given, util) {
           }
         );
 
+        var AUTH_HEADER = 'X-Test-Token',
+            ACCESS_TOKEN_ID = '12345';
+
+        function setupAuthenticatedHttpClient(urlBase) {
+          loopBackResourceProvider.setUrlBase(urlBase);
+          loopBackResourceProvider.setAuthHeader(AUTH_HEADER);
+          var $injector = createInjector();
+          var auth = $injector.get('LoopBackAuth');
+          auth.accessTokenId = ACCESS_TOKEN_ID;
+          return $injector.get('$http');
+        }
+
         it('intercepts only configured urlBase requests', function() {
           var urlBase = 'http://test.urlbase',
-              nonUrlBase = 'http://test.nonurlbase',
-              authHeader = 'X-Test-Token',
-              accessTokenId = '12345';
+              nonUrlBase = 'http://test.nonurlbase';
 
-          loopBackResourceProvider.setUrlBase(urlBase);
-          loopBackResourceProvider.setAuthHeader(authHeader);
-
-          var $injector = createInjector();
-
-          // set custom accessTokenId
-          var auth = $injector.get('LoopBackAuth');
-          auth.accessTokenId = accessTokenId;
-
-          var $http = $injector.get('$http');
+          var $http = setupAuthenticatedHttpClient(urlBase);
 
           // request with $http service to a nonUrlBase
           return expectMockedRequestPromise($http.get(nonUrlBase)).then(
             function(req) {
               // when the request points to a non urlBase
-              // domain it should not have authHeader
-              expect(req.config.headers[authHeader]).to.equal(undefined);
+              // domain it should not have AUTH_HEADER
+              expect(req.config.headers[AUTH_HEADER]).to.equal(undefined);
             }
           );
         });
+
+        it('sends auth credentials for urlBase requests', function() {
+          var urlBase = 'http://test.urlbase',
+              urlBaseResource = 'http://test.urlbase/resource';
+
+          var $http = setupAuthenticatedHttpClient(urlBase);
+
+          // request with $http service to a urlBaseResource
+          return expectMockedRequestPromise($http.get(urlBaseResource)).then(
+            function(req) {
+              // when the request points to a urlBase
+              // domain it should have AUTH_HEADER
+              expect(req.config.headers[AUTH_HEADER]).to.equal(ACCESS_TOKEN_ID);
+            }
+          );
+        });
+
+        it('sends auth creds for internal requests with internal urlBase',
+          function() {
+            var urlBase = '/api',
+                nonUrlBase = '/otherlocalpath';
+
+            var $http = setupAuthenticatedHttpClient(urlBase);
+
+            // request with $http service to a nonUrlBase
+            return expectMockedRequestPromise($http.get(nonUrlBase))
+              .then(
+                function(req) {
+                  // when the request points to an internal url
+                  // and urlBase is an internal url
+                  // accessToken should be inserted
+                  expect(req.config.headers[AUTH_HEADER])
+                    .to.equal(ACCESS_TOKEN_ID);
+                }
+              );
+          }
+        );
+
+        it('sends auth creds for external requests to urlBase host',
+          function() {
+            var urlBase = 'http://apihost/api',
+                nonUrlBase = 'http://apihost/otherpath';
+
+            var $http = setupAuthenticatedHttpClient(urlBase);
+
+            // request with $http service to a nonUrlBase
+            return expectMockedRequestPromise($http.get(nonUrlBase))
+              .then(
+                function(req) {
+                  // when the request points to same host as configuered urlBase
+                  // accessToken should be inserted
+                  expect(req.config.headers[AUTH_HEADER])
+                    .to.equal(ACCESS_TOKEN_ID);
+                }
+              );
+        });
+
+        it('does not send auth creds to non urlBase host', function() {
+          var urlBase = '/api',
+              nonUrlBaseHost = 'http://otherhost/api';
+
+          var $http = setupAuthenticatedHttpClient(urlBase);
+
+          // request with $http service to a nonUrlBase
+          return expectMockedRequestPromise($http.get(nonUrlBaseHost))
+            .then(
+              function(req) {
+                // when the request points to a non urlBase
+                // domain it should not have AUTH_HEADER
+                expect(req.config.headers[AUTH_HEADER]).to.equal(undefined);
+              }
+            );
+        });
+
       });
     });
 
