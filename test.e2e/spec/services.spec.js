@@ -832,6 +832,33 @@ define(['angular', 'given', 'util'], function(angular, given, util) {
           });
       });
     });
+    
+    describe('$resource for model generated with include schema', function() {
+      var $injector;
+      before(function() {
+        return given.servicesForLoopBackApp(
+          {
+            models: {
+              'pretender': {},
+            },
+            includeSchema: true,
+            setupFn: (function(app, cb) {
+              var Pretender = app.models.Pretender;
+              cb();
+            }).toString(),
+          })
+          .then(function(createInjector) {
+            $injector = createInjector();
+          });
+      });
+
+      it('has a schema method generated', function() {
+        var Pretender = $injector.get('Pretender');
+        var methodNames = Object.keys(Pretender);
+        console.log('methods', methodNames);
+        expect(methodNames).to.include.members(['schema']);
+      });
+    });
 
     describe('for models with belongsTo relation', function() {
       var $injector, Town, Country, testData;
