@@ -1,3 +1,17 @@
+2016-02-24, Version 1.7.0
+=========================
+
+ * Handle Safari private/incognito mode (David Cheung)
+
+ * Update dependencies (Miroslav Bajtoš)
+
+ * Remove bower.json, install deps via npm (Miroslav Bajtoš)
+
+ * Add CommonJS package manager support (Djamel Feddad)
+
+ * Fix npm test on windows (David Cheung)
+
+
 2015-12-08, Version 1.6.0
 =========================
 
