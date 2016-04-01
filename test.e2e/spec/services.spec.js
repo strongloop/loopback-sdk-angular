@@ -65,17 +65,24 @@ define(['angular', 'given', 'util'], function(angular, given, util) {
           };
 
       before(function() {
-        return given.servicesForLoopBackApp(
-          {
-            name: moduleName,
-            models: {
-              MyModel: { name: { type: String, required: true } }
-            }
-          })
-          .then(function(_createInjector) {
-            setTestAngularModuleConfig();
-            createInjector = _createInjector;
-          });
+          return given.servicesForLoopBackApp(
+              {
+                name: moduleName,
+                models: {
+                  MyModel: {
+                    properties: {
+                      name: {
+                        type: 'string',
+                        required: true
+                      }
+                    }
+                  }
+                }
+              })
+              .then(function(_createInjector) {
+                  setTestAngularModuleConfig();
+                  createInjector = _createInjector;
+              });
       });
 
       beforeEach(function() {
@@ -265,8 +272,19 @@ define(['angular', 'given', 'util'], function(angular, given, util) {
       before(function() {
         return given.servicesForLoopBackApp(
           {
+            name: 'customModel',
             models: {
-              MyModel: { name: { type: String, required: true } }
+              MyModel: {
+                properties: {
+                  name: {
+                    type: 'string',
+                    required: true
+                  },
+                  createdOn: {
+                    type: 'date'
+                  }
+                }
+              }
             }
           })
           .then(function(createInjector) {
@@ -374,6 +392,15 @@ define(['angular', 'given', 'util'], function(angular, given, util) {
               util.throwHttpError
             );
             return found.$promise;
+          });
+      });
+
+      it('returns date Object for date property', function() {
+        var obj = MyModel.create({ name: 'new', createdOn: new Date() });
+        return obj.$promise
+          .catch(util.throwHttpError)
+          .then(function() {
+            expect(obj.createdOn).to.be.a('date');
           });
       });
 

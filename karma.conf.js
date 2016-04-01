@@ -17,6 +17,8 @@ module.exports = function(config) {
       'test.e2e/test-main.js',
       { pattern: 'node_modules/chai/**/*.js', included: false },
       { pattern: 'node_modules/angular*/**/*.js', included: false },
+      { pattern: 'node_modules/lodash/index.js', included: false },
+      { pattern: 'node_modules/moment/**/*.js', included: false },
       { pattern: 'test.e2e/**/*.js', included: false },
 
       // Include lib/ files to let Karma watch for changes there
