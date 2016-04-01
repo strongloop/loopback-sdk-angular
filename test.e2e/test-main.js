@@ -18,7 +18,9 @@ requirejs.config({
     angularResource: 'node_modules/angular-resource/angular-resource',
     angularMocks: 'node_modules/angular-mocks/angular-mocks',
     given: 'test.e2e/given',
-    util: 'test.e2e/util'
+    util: 'test.e2e/util',
+    lodash: 'node_modules/lodash/index',
+    moment: 'node_modules/moment/moment'
   },
 
   shim: {
@@ -31,7 +33,8 @@ requirejs.config({
       deps: ['angular'],
       exports: 'angular.mock'
     },
-    'chai': { exports: 'chai' }
+    'chai': { exports: 'chai' },
+    'lodash': { exports: '_' }
   },
 
   // ask Require.js to load these files (all our tests)
@@ -41,6 +44,8 @@ requirejs.config({
   callback: window.__karma__.start
 });
 
-require(['chai'], function(chai) {
+require(['chai', 'lodash', 'moment'], function(chai, _, moment) {
   window.expect = chai.expect;
+  window._ = _;
+  window.moment = moment;
 });
