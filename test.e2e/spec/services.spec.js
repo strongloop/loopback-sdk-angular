@@ -88,6 +88,18 @@ define(['angular', 'given', 'util'], function(angular, given, util) {
       });
 
       describe('LoopBackResourceProvider', function() {
+        it('has getAuthHeader method', function() {
+          expect(loopBackResourceProvider).to.have.property('getAuthHeader');
+        });
+
+        it('can get authHeader', function() {
+          var authHeader = 'X-Awesome-Token';
+          loopBackResourceProvider.setAuthHeader(authHeader);
+          var gotAuthHeader = loopBackResourceProvider.getAuthHeader();
+
+          return expect(gotAuthHeader).to.equal(authHeader);
+        });
+
         it('has setAuthHeader method', function() {
           expect(loopBackResourceProvider).to.have.property('setAuthHeader');
         });
