@@ -554,6 +554,27 @@ define(['angular', 'given', 'util'], function(angular, given, util) {
           .catch(util.throwHttpError);
       });
 
+      it('clears authentication data on logout error', function() {
+        return givenLoggedInUser()
+          .then(function() {
+            var auth = $injector.get('LoopBackAuth');
+            expect(auth.accessTokenId, 'accessTokenId').to.not.equal(null);
+            auth.accessTokenId = 'fake_access_token';
+            return Customer.logout().$promise;
+          })
+          .then(function() {
+            var auth = $injector.get('LoopBackAuth');
+            expect(auth.accessTokenId, 'accessTokenId').to.equal(null);
+            expect(auth.currentUserId, 'currentUserId').to.equal(null);
+            
+            // Check that localStorage was cleared too.
+            auth = getNew('LoopBackAuth');
+            expect(auth.accessTokenId, 'stored accessTokenId').to.equal(null);
+            expect(auth.currentUserId, 'stored currentUserId').to.equal(null);
+          })
+          .catch(util.throwHttpError);
+      });
+
       it('clears authentication data in local and session storage ' +
         'on logout when rememberMe=true and page has been reloaded after login',
       function() {
