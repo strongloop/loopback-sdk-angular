@@ -20,7 +20,7 @@ module.exports = function(config) {
       { pattern: 'test.e2e/**/*.js', included: false },
 
       // Include lib/ files to let Karma watch for changes there
-      { pattern: 'lib/**/*.js', included: false }
+      { pattern: 'lib/**/*.js', included: false },
     ],
 
     // list of files to exclude
@@ -35,7 +35,7 @@ module.exports = function(config) {
 
     // CI friendly test output
     junitReporter: {
-      outputFile: 'karma-xunit.xml'
+      outputFile: 'karma-xunit.xml',
     },
 
 
@@ -73,6 +73,6 @@ module.exports = function(config) {
 
     // Continuous Integration mode
     // if true, it capture browsers, run tests and exit
-    singleRun: false
+    singleRun: false,
   });
 };

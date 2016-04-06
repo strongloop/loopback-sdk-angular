@@ -6,7 +6,7 @@ var loopbackCoreJs = path.resolve(__dirname, 'loopback-core.js');
 try {
   var generator = require('..');
   var loopback = require('loopback');
-} catch(err) {
+} catch (err) {
   if (err.code === 'MODULE_NOT_FOUND' && fs.existsSync(loopbackCoreJs)) {
     console.log('Cannot load the generator, node_modules were not installed.');
     console.log('Ignoring the error since the output file is already there.');

@@ -10,7 +10,7 @@ define(function() {
     var msg = 'HTTP ' + res.status;
     if (res.data && res.data.error && res.data.error.message)
       msg += ' ' + res.data.error.message;
-    msg += ' [' + res.config.method + ' ' +res.config.url + ']';
+    msg += ' [' + res.config.method + ' ' + res.config.url + ']';
 
     var details = res.data && res.data.error && res.data.error.details;
     if (details)
