@@ -66,6 +66,7 @@ masterApp.post('/setup', function(req, res, next) {
   var name = opts.name;
   var models = opts.models;
   var enableAuth = opts.enableAuth;
+  var includeSchema = opts.includeSchema;
   var setupFn = compileSetupFn(name, opts.setupFn);
 
   if (!name)
@@ -105,7 +106,7 @@ masterApp.post('/setup', function(req, res, next) {
     }
 
     try {
-      servicesScript = generator.services(lbApp, name, apiUrl);
+      servicesScript = generator.services(lbApp, name, apiUrl, includeSchema);
     } catch (err) {
       console.error('Cannot generate services script:', err.stack);
       servicesScript = 'throw new Error("Error generating services script.");';
