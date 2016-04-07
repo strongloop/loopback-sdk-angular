@@ -4,9 +4,10 @@
   "description": "Tool for auto-generating Angular $resource services for LoopBack",
   "main": "index.js",
   "scripts": {
-    "prepublish": "node ./apidocs/describe-builtin-models.js",
-    "pretest": "jshint .",
-    "test": "node ./test.e2e/test-server.js node node_modules/karma/bin/karma start --single-run --browsers PhantomJS"
+    "generate-loopback-core": "node ./apidocs/describe-builtin-models.js",
+    "prepublish": "npm run generate-loopback-core",
+    "test": "node ./test.e2e/test-server.js node node_modules/karma/bin/karma start --single-run  --browsers PhantomJS",
+    "posttest": "eslint ."
   },
   "repository": {
     "type": "git",
@@ -34,9 +35,10 @@
     "cors": "^2.2",
     "debug": "^2.2.0",
     "errorhandler": "^1.1.1",
+    "eslint": "^2.5.3",
+    "eslint-config-loopback": "^1.0.0",
     "express": "^4.6",
     "fs.extra": "^1.2",
-    "jshint": "^2.4",
     "karma": "^0.13.19",
     "karma-chrome-launcher": "^0.2.2",
     "karma-junit-reporter": "^0.3.8",
