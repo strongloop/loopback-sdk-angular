@@ -1,3 +1,4 @@
+/* eslint quotes: ["error", "single"] */
 var fs = require('fs');
 var path = require('path');
 
