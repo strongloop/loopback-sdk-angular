@@ -7,7 +7,8 @@
     "generate-loopback-core": "node ./apidocs/describe-builtin-models.js",
     "prepublish": "npm run generate-loopback-core",
     "test": "node ./test.e2e/test-server.js node node_modules/karma/bin/karma start --single-run  --browsers PhantomJS",
-    "posttest": "eslint ."
+    "lint": "eslint .",
+    "posttest": "npm run generate-loopback-core && npm run lint"
   },
   "repository": {
     "type": "git",
