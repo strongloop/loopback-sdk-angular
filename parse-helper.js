@@ -1,3 +1,8 @@
+// Copyright IBM Corp. 2014. All Rights Reserved.
+// Node module: loopback-sdk-angular
+// This file is licensed under the MIT License.
+// License text available at https://opensource.org/licenses/MIT
+
 /*!
  * Parsers for extracting data from the generated lb-service.js code.
  * Used by unit-tests in grunt-loopback-sdk-angular and
