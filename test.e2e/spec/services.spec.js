@@ -971,6 +971,45 @@ define(['angular', 'given', 'util'], function(angular, given, util) {
       });
     });
 
+    describe('$resource generated with includeSchema:true', function() {
+      var $injector;
+      before(function() {
+        return given.servicesForLoopBackApp(
+          {
+            models: {
+              Product: {
+                properties: {
+                  name: 'string',
+                  price: { type: 'number' },
+                },
+              },
+            },
+            includeSchema: true,
+          })
+          .then(function(createInjector) {
+            $injector = createInjector();
+          });
+      });
+
+      it('has "schema" property with normalized LDL', function() {
+        var Product = $injector.get('Product');
+        var methodNames = Object.keys(Product);
+        expect(methodNames).to.include.members(['schema']);
+        var schema = Product.schema;
+        expect(schema).to.have.property('name', 'Product');
+        expect(schema).to.have.property('properties');
+        console.log('schema properties', schema.properties);
+        expect(schema.properties).to.eql({
+          // "name: 'string'" was converted to full schema object
+          name: { type: 'String' },
+          // Type "number" was normalized to "Number"
+          price: { type: 'Number' },
+          // auto-injected id property
+          id: { id: 1, generated: true, type: 'Number' },
+        });
+      });
+    });
+
     describe('for models with belongsTo relation', function() {
       var $injector, Town, Country, testData;
       before(function() {

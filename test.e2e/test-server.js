@@ -67,6 +67,7 @@ masterApp.post('/setup', function(req, res, next) {
   var name = opts.name;
   var models = opts.models;
   var enableAuth = opts.enableAuth;
+  var includeSchema = opts.includeSchema;
   var setupFn = compileSetupFn(name, opts.setupFn);
 
   if (!name)
@@ -106,7 +107,17 @@ masterApp.post('/setup', function(req, res, next) {
     }
 
     try {
-      servicesScript = generator.services(lbApp, name, apiUrl);
+      if (includeSchema) {
+        // the new options-based API
+        servicesScript = generator.services(lbApp, {
+          ngModuleName: name,
+          apiUrl: apiUrl,
+          includeSchema: includeSchema,
+        });
+      } else {
+        // the old API, test it to verify backwards compatibility
+        servicesScript = generator.services(lbApp, name, apiUrl);
+      }
     } catch (err) {
       console.error('Cannot generate services script:', err.stack);
       servicesScript = 'throw new Error("Error generating services script.");';
