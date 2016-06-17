@@ -164,6 +164,40 @@ define(['angular', 'given', 'util'], function(angular, given, util) {
         });
       });
 
+      describe('LoopBackResource', function() {
+        it('has getAuthHeader method', function() {
+          var $injector = createInjector();
+          var loopBackResource = $injector.get('LoopBackResource');
+          expect(loopBackResource).to.have.property('getAuthHeader');
+        });
+
+        it('can get authHeader', function() {
+          var $injector = createInjector();
+          var loopBackResource = $injector.get('LoopBackResource');
+          var authHeader = 'X-Awesome-Token';
+          loopBackResourceProvider.setAuthHeader(authHeader);
+          var gotAuthHeader = loopBackResource.getAuthHeader();
+
+          return expect(gotAuthHeader).to.equal(authHeader);
+        });
+
+        it('has getUrlBase method', function() {
+          var $injector = createInjector();
+          var loopBackResource = $injector.get('LoopBackResource');
+          expect(loopBackResource).to.have.property('getUrlBase');
+        });
+
+        it('can get urlBase', function() {
+          var $injector = createInjector();
+          var loopBackResource = $injector.get('LoopBackResource');
+          var urlBase = 'http://test.urlbase';
+          loopBackResourceProvider.setUrlBase(urlBase);
+          var base = loopBackResource.getUrlBase();
+
+          return expect(base).to.equal(urlBase);
+        });
+      });
+
       describe('LoopBackAuthRequestInterceptor', function() {
         it('should be configured as an $httpProvider\'s interceptor',
           function() {
