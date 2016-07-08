@@ -399,15 +399,15 @@ define(['angular', 'given', 'util'], function(angular, given, util) {
         expect(methodNames).to.include.members([
           'create',
           'createMany',
-          //'updateOrCreate',
+          'updateOrCreate',
           'upsert',
           'exists',
           'findById',
           'find',
           'findOne',
-          //'destroyById',
+          'destroyById',
           'deleteById',
-          //'removeById',
+          'removeById',
           'count',
           'prototype$updateAttributes',
         ]);
