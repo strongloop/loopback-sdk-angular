@@ -1,3 +1,23 @@
+2016-07-13, Version 1.8.0
+=========================
+
+ * Expose configured properties on LoopBackResource (Matteo Padovano)
+
+ * Describe model schema in generated $resource (Miroslav Bajtos)
+
+ * update copyright notices and license (Ryan Graham)
+
+ * Clear user data when logout returns error response (Matteo Padovano)
+
+ * Lint generated code (David Cheung)
+
+ * Use ESlint in replace of jshint (David Cheung)
+
+ * added test for LoopBackResourceProvider.getAuthHeader() method. (Martin Juhasz)
+
+ * Added getter for AuthHeader value in LoopBackResource (Martin Juhasz)
+
+
 2016-02-24, Version 1.7.0
 =========================
 
