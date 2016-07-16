@@ -1,3 +1,8 @@
+// Copyright IBM Corp. 2014,2016. All Rights Reserved.
+// Node module: loopback-sdk-angular
+// This file is licensed under the MIT License.
+// License text available at https://opensource.org/licenses/MIT
+
 // Karma configuration
 // Generated on Fri Jan 17 2014 19:17:51 GMT+0100 (CET)
 
@@ -20,7 +25,7 @@ module.exports = function(config) {
       { pattern: 'test.e2e/**/*.js', included: false },
 
       // Include lib/ files to let Karma watch for changes there
-      { pattern: 'lib/**/*.js', included: false }
+      { pattern: 'lib/**/*.js', included: false },
     ],
 
     // list of files to exclude
@@ -35,7 +40,7 @@ module.exports = function(config) {
 
     // CI friendly test output
     junitReporter: {
-      outputFile: 'karma-xunit.xml'
+      outputFile: 'karma-xunit.xml',
     },
 
 
@@ -73,6 +78,6 @@ module.exports = function(config) {
 
     // Continuous Integration mode
     // if true, it capture browsers, run tests and exit
-    singleRun: false
+    singleRun: false,
   });
 };

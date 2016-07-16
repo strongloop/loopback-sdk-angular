@@ -1,3 +1,8 @@
+// Copyright IBM Corp. 2014,2016. All Rights Reserved.
+// Node module: loopback-sdk-angular
+// This file is licensed under the MIT License.
+// License text available at https://opensource.org/licenses/MIT
+
 /*
 The test server is an HTTP service allowing
 front-end tests running in a browser to setup
@@ -13,12 +18,8 @@ var morgan = require('morgan');
 var errorHandler = require('errorhandler');
 
 var port = process.env.PORT || 3838;
-var baseUrl;
-var apiUrl;
+var baseUrl, apiUrl, lbApp, servicesScript;
 var masterApp = express();
-
-var lbApp;
-var servicesScript;
 
 // Speed up the password hashing algorithm
 // for tests using the built-in User model
@@ -66,6 +67,7 @@ masterApp.post('/setup', function(req, res, next) {
   var name = opts.name;
   var models = opts.models;
   var enableAuth = opts.enableAuth;
+  var includeSchema = opts.includeSchema;
   var setupFn = compileSetupFn(name, opts.setupFn);
 
   if (!name)
@@ -105,7 +107,17 @@ masterApp.post('/setup', function(req, res, next) {
     }
 
     try {
-      servicesScript = generator.services(lbApp, name, apiUrl);
+      if (includeSchema) {
+        // the new options-based API
+        servicesScript = generator.services(lbApp, {
+          ngModuleName: name,
+          apiUrl: apiUrl,
+          includeSchema: includeSchema,
+        });
+      } else {
+        // the old API, test it to verify backwards compatibility
+        servicesScript = generator.services(lbApp, name, apiUrl);
+      }
     } catch (err) {
       console.error('Cannot generate services script:', err.stack);
       servicesScript = 'throw new Error("Error generating services script.");';
@@ -116,7 +128,6 @@ masterApp.post('/setup', function(req, res, next) {
 
     res.send(200, { servicesUrl: baseUrl + 'services?' + name });
   }.bind(this));
-
 });
 
 function compileSetupFn(name, source) {
@@ -134,7 +145,7 @@ masterApp.get('/services', function(req, res, next) {
 });
 
 masterApp.use('/api', function(res, req, next) {
-  if(!lbApp) return next(new Error('Call /setup first.'));
+  if (!lbApp) return next(new Error('Call /setup first.'));
   lbApp(res, req, next);
 });
 

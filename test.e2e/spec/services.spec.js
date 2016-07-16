@@ -1,76 +1,81 @@
+// Copyright IBM Corp. 2014,2015. All Rights Reserved.
+// Node module: loopback-sdk-angular
+// This file is licensed under the MIT License.
+// License text available at https://opensource.org/licenses/MIT
+
 define(['angular', 'given', 'util'], function(angular, given, util) {
   'use strict';
 
   describe('services', function() {
     describe('url base and authentication header customization', function() {
       var createInjector,
-          $injector,
-          httpProvider,
-          loopBackResourceProvider,
-          moduleName = 'urlBaseAndAuthHeaderCustomization',
-          // set angular configuration
-          // 1. Add special HttpTestRequestInterceptor
-          // 2. Expose providers to parent scope to easily access
-          // them from the tests
-          setTestAngularModuleConfig = function() {
-            angular.module(moduleName)
-              .config(function(LoopBackResourceProvider, $httpProvider) {
-                loopBackResourceProvider = LoopBackResourceProvider;
-                httpProvider = $httpProvider;
-                httpProvider.interceptors.push('HttpTestRequestInterceptor');
-              })
-              .factory('HttpTestRequestInterceptor', function($q) {
-                return {
-                  'request': function(config) {
-                    var deferred = $q.defer();
-                    // set a promise as timeout to avoid
-                    // unnecessary request, as soon as the promise
-                    // is resolved the "resource" promise that is
-                    // responsable for making the real request will be
-                    // canceled and it will throw an error that also
-                    // propagates the config data needed to do the assertions.
-                    config.timeout = deferred.promise;
-                    // set httpTestRequestInterceptor variable to
-                    // be able to handle cancelled requests coming from
-                    // this interceptor.
-                    config.httpTestRequestInterceptor = true;
-                    // resolve the promise immediately
-                    deferred.resolve();
-                    return config;
-                  }
-                };
-              });
-          },
-          expectMockedRequestPromise = function(promise) {
-            return promise.then(
-              // success handler
-              // NOTE: interceptor should always fail due the request is
-              // being cancelled so if it succeed it means that
-              // something is wrong and the test should fail.
-              function() {
-                throw new Error('The request was supposed to fail.');
-              },
-              // error handler
-              function(req) {
-                var config = req.config;
-                // when request has been cancelled by HttpTestRequestInterceptor
-                // then do the assertion otherwise just fail
-                if (config.httpTestRequestInterceptor) {
-                  return req;
-                } else {
-                  throw new Error('httpTestRequestInterceptor is not working');
-                }
-              }
-            );
+        $injector,
+        httpProvider,
+        loopBackResourceProvider;
+      var moduleName = 'urlBaseAndAuthHeaderCustomization';
+        // set angular configuration
+        // 1. Add special HttpTestRequestInterceptor
+        // 2. Expose providers to parent scope to easily access
+        // them from the tests
+      var setTestAngularModuleConfig = function() {
+        angular.module(moduleName)
+        .config(function(LoopBackResourceProvider, $httpProvider) {
+          loopBackResourceProvider = LoopBackResourceProvider;
+          httpProvider = $httpProvider;
+          httpProvider.interceptors.push('HttpTestRequestInterceptor');
+        })
+        .factory('HttpTestRequestInterceptor', function($q) {
+          return {
+            'request': function(config) {
+              var deferred = $q.defer();
+              // set a promise as timeout to avoid
+              // unnecessary request, as soon as the promise
+              // is resolved the "resource" promise that is
+              // responsable for making the real request will be
+              // canceled and it will throw an error that also
+              // propagates the config data needed to do the assertions.
+              config.timeout = deferred.promise;
+              // set httpTestRequestInterceptor variable to
+              // be able to handle cancelled requests coming from
+              // this interceptor.
+              config.httpTestRequestInterceptor = true;
+              // resolve the promise immediately
+              deferred.resolve();
+              return config;
+            },
           };
+        });
+      };
+      var expectMockedRequestPromise = function(promise) {
+        return promise.then(
+          // success handler
+          // NOTE: interceptor should always fail due the request is
+          // being cancelled so if it succeed it means that
+          // something is wrong and the test should fail.
+          function() {
+            throw new Error('The request was supposed to fail.');
+          },
+          // error handler
+          function(req) {
+            var config = req.config;
+            // when request has been cancelled by HttpTestRequestInterceptor
+            // then do the assertion otherwise just fail
+            if (config.httpTestRequestInterceptor) {
+              return req;
+            } else {
+              throw new Error('httpTestRequestInterceptor is not working');
+            }
+          }
+        );
+      };
 
       before(function() {
         return given.servicesForLoopBackApp(
           {
             name: moduleName,
             models: {
-              MyModel: { name: { type: String, required: true } }
-            }
+              MyModel: { name: { type: String, required: true }},
+            },
           })
           .then(function(_createInjector) {
             setTestAngularModuleConfig();
@@ -88,13 +93,25 @@ define(['angular', 'given', 'util'], function(angular, given, util) {
       });
 
       describe('LoopBackResourceProvider', function() {
+        it('has getAuthHeader method', function() {
+          expect(loopBackResourceProvider).to.have.property('getAuthHeader');
+        });
+
+        it('can get authHeader', function() {
+          var authHeader = 'X-Awesome-Token';
+          loopBackResourceProvider.setAuthHeader(authHeader);
+          var gotAuthHeader = loopBackResourceProvider.getAuthHeader();
+
+          return expect(gotAuthHeader).to.equal(authHeader);
+        });
+
         it('has setAuthHeader method', function() {
           expect(loopBackResourceProvider).to.have.property('setAuthHeader');
         });
 
         it('can configure authorization header', function() {
-          var authHeader = 'X-Awesome-Token',
-              accessTokenId = '123456';
+          var authHeader = 'X-Awesome-Token';
+          var accessTokenId = '123456';
 
           loopBackResourceProvider.setAuthHeader(authHeader);
           var $injector = createInjector();
@@ -144,6 +161,40 @@ define(['angular', 'given', 'util'], function(angular, given, util) {
                 .to.equal(urlBase);
             }
           );
+        });
+      });
+
+      describe('LoopBackResource', function() {
+        it('has getAuthHeader method', function() {
+          var $injector = createInjector();
+          var loopBackResource = $injector.get('LoopBackResource');
+          expect(loopBackResource).to.have.property('getAuthHeader');
+        });
+
+        it('can get authHeader', function() {
+          var $injector = createInjector();
+          var loopBackResource = $injector.get('LoopBackResource');
+          var authHeader = 'X-Awesome-Token';
+          loopBackResourceProvider.setAuthHeader(authHeader);
+          var gotAuthHeader = loopBackResource.getAuthHeader();
+
+          return expect(gotAuthHeader).to.equal(authHeader);
+        });
+
+        it('has getUrlBase method', function() {
+          var $injector = createInjector();
+          var loopBackResource = $injector.get('LoopBackResource');
+          expect(loopBackResource).to.have.property('getUrlBase');
+        });
+
+        it('can get urlBase', function() {
+          var $injector = createInjector();
+          var loopBackResource = $injector.get('LoopBackResource');
+          var urlBase = 'http://test.urlbase';
+          loopBackResourceProvider.setUrlBase(urlBase);
+          var base = loopBackResource.getUrlBase();
+
+          return expect(base).to.equal(urlBase);
         });
       });
 
@@ -256,7 +307,6 @@ define(['angular', 'given', 'util'], function(angular, given, util) {
               }
             );
         });
-
       });
     });
 
@@ -266,8 +316,8 @@ define(['angular', 'given', 'util'], function(angular, given, util) {
         return given.servicesForLoopBackApp(
           {
             models: {
-              MyModel: { name: { type: String, required: true } }
-            }
+              MyModel: { name: { type: String, required: true }},
+            },
           })
           .then(function(createInjector) {
             $injector = createInjector();
@@ -315,15 +365,15 @@ define(['angular', 'given', 'util'], function(angular, given, util) {
         var arr = MyModel.createMany([
          { name: 'one', multi: true },
          { name: 'two', multi: true },
-         { name: 'three', multi: true }
+         { name: 'three', multi: true },
         ],
         function() {
           expect(arr).to.have.property('length', 3);
         });
 
-      return arr.$promise.then(function() {
-        var found = MyModel.find({
-          filter: { where: { multi: true } } },
+        return arr.$promise.then(function() {
+          var found = MyModel.find({
+            filter: { where: { multi: true }}},
           function() {
             var namesFound = found.map(function(it) { return it.name; });
             expect(namesFound).to.eql(['one', 'two', 'three']);
@@ -344,7 +394,7 @@ define(['angular', 'given', 'util'], function(angular, given, util) {
         );
         return promise.then(function() {
           var found = MyModel.find(
-            { filter: { where: { name: obj.name } } },
+            { filter: { where: { name: obj.name }}},
             function() {
               expect(found).to.have.length(1);
               expect(found[0].id).to.equal(obj.id);
@@ -365,7 +415,7 @@ define(['angular', 'given', 'util'], function(angular, given, util) {
           })
           .then(function() {
             var found = MyModel.find(
-              { filter: { where: { name: obj.name } } },
+              { filter: { where: { name: obj.name }}},
               function() {
                 expect(found).to.have.length(1);
                 expect(found[0].id).to.equal(obj.id);
@@ -393,7 +443,7 @@ define(['angular', 'given', 'util'], function(angular, given, util) {
           'deleteById',
           'removeById',
           'count',
-          'prototype$updateAttributes'
+          'prototype$updateAttributes',
         ]);
       });
 
@@ -408,8 +458,8 @@ define(['angular', 'given', 'util'], function(angular, given, util) {
         return given.servicesForLoopBackApp(
           {
             models: {
-              'lower-case-not-an-identifier': {}
-            }
+              'lower-case-not-an-identifier': {},
+            },
           })
           .then(function(createInjector) {
             $injector = createInjector();
@@ -432,14 +482,14 @@ define(['angular', 'given', 'util'], function(angular, given, util) {
             setupFn: (function(app, cb) {
               var Pretender = app.models.Pretender;
               Pretender.prototype['__get__spaces'] = function(cb) {
-                cb(null, [1,2,3]);
+                cb(null, [1, 2, 3]);
               };
               Pretender.remoteMethod(
                 '__get__spaces',
                 {
                   isStatic: false,
                   http: { path: '/spaces', verb: 'get' },
-                  returns: { arg: 'spaces', type: 'array', root: true }
+                  returns: { arg: 'spaces', type: 'array', root: true },
                 }
               );
               cb();
@@ -472,18 +522,18 @@ define(['angular', 'given', 'util'], function(angular, given, util) {
                     accessTokens: {
                       model: 'AccessToken',
                       type: 'hasMany',
-                      foreignKey: 'userId'
-                    }
-                  }
-                }
+                      foreignKey: 'userId',
+                    },
+                  },
+                },
               },
               product: {
                 properties: {
-                  model: String
-                }
-              }
+                  model: String,
+                },
+              },
             },
-            enableAuth: true
+            enableAuth: true,
           })
           .then(function(_createInjector) {
             createInjector = _createInjector;
@@ -530,6 +580,27 @@ define(['angular', 'given', 'util'], function(angular, given, util) {
             // property, because any HTTP request will fail regardless of the
             // Authorization header value, since the token was invalidated on
             // the server side too.
+            var auth = $injector.get('LoopBackAuth');
+            expect(auth.accessTokenId, 'accessTokenId').to.equal(null);
+            expect(auth.currentUserId, 'currentUserId').to.equal(null);
+
+            // Check that localStorage was cleared too.
+            auth = getNew('LoopBackAuth');
+            expect(auth.accessTokenId, 'stored accessTokenId').to.equal(null);
+            expect(auth.currentUserId, 'stored currentUserId').to.equal(null);
+          })
+          .catch(util.throwHttpError);
+      });
+
+      it('clears authentication data on logout error', function() {
+        return givenLoggedInUser()
+          .then(function() {
+            var auth = $injector.get('LoopBackAuth');
+            expect(auth.accessTokenId, 'accessTokenId').to.not.equal(null);
+            auth.accessTokenId = 'fake_access_token';
+            return Customer.logout().$promise;
+          })
+          .then(function() {
             var auth = $injector.get('LoopBackAuth');
             expect(auth.accessTokenId, 'accessTokenId').to.equal(null);
             expect(auth.currentUserId, 'currentUserId').to.equal(null);
@@ -599,9 +670,9 @@ define(['angular', 'given', 'util'], function(angular, given, util) {
       });
 
       it('resolves `undefined` rememberMe to true', function() {
-        var loginParams = { rememberMe : undefined };
-        return givenLoggedInUser('rememberMe@example.com',loginParams)
-          .then(function( user ) {
+        var loginParams = { rememberMe: undefined };
+        return givenLoggedInUser('rememberMe@example.com', loginParams)
+          .then(function(user) {
             var LoopBackAuth = $injector.get('LoopBackAuth');
             expect(LoopBackAuth.rememberMe).to.equal(true);
           })
@@ -609,11 +680,11 @@ define(['angular', 'given', 'util'], function(angular, given, util) {
       });
 
       it('`rememberMe` false should be correct for Storages', function() {
-        var loginParams = { rememberMe : false };
-        return givenLoggedInUser('dontremember@example.com',loginParams)
-          .then(function( user ) {
+        var loginParams = { rememberMe: false };
+        return givenLoggedInUser('dontremember@example.com', loginParams)
+          .then(function(user) {
             var LoopBackAuth = $injector.get('LoopBackAuth');
-            var rememberMeKey = LoopBackAuth.propsPrefix+'rememberMe';
+            var rememberMeKey = LoopBackAuth.propsPrefix + 'rememberMe';
             expect(LoopBackAuth.rememberMe).to.equal(false);
             expect(localStorage[rememberMeKey]).to.not.equal(true);
             expect(sessionStorage[rememberMeKey]).to.not.equal(true);
@@ -698,7 +769,7 @@ define(['angular', 'given', 'util'], function(angular, given, util) {
           });
       });
 
-      it('provides User.getCurrentId method', function () {
+      it('provides User.getCurrentId method', function() {
         return givenLoggedInUser()
           .then(function(token) {
             expect(Customer.getCurrentId()).to.equal(token.userId);
@@ -709,7 +780,7 @@ define(['angular', 'given', 'util'], function(angular, given, util) {
       function givenLoggedInUser(email, loginParams) {
         var credentials = {
           email: email || 'user-' + (++idCounter) + '@example.com',
-          password: 'a-password'
+          password: 'a-password',
         };
 
         return Customer.create(credentials).$promise
@@ -730,7 +801,7 @@ define(['angular', 'given', 'util'], function(angular, given, util) {
                 // use the built-in User model
               },
             },
-            enableAuth: true
+            enableAuth: true,
           })
           .then(function(createInjector) {
             $injector = createInjector();
@@ -761,10 +832,10 @@ define(['angular', 'given', 'util'], function(angular, given, util) {
                   relations: {
                     categories: {
                       model: 'Category',
-                      type: 'hasAndBelongsToMany'
-                    }
-                  }
-                }
+                      type: 'hasAndBelongsToMany',
+                    },
+                  },
+                },
               },
               Category: {
                 properties: { name: 'string' },
@@ -772,11 +843,11 @@ define(['angular', 'given', 'util'], function(angular, given, util) {
                   relations: {
                     products: {
                       model: 'Product',
-                      type: 'hasAndBelongsToMany'
-                    }
-                  }
-                }
-              }
+                      type: 'hasAndBelongsToMany',
+                    },
+                  },
+                },
+              },
             },
             setupFn: (function(app, cb) {
               /*globals debug:true */
@@ -794,12 +865,12 @@ define(['angular', 'given', 'util'], function(angular, given, util) {
 
                     cb(null, {
                       product: prod,
-                      category: cat
+                      category: cat,
                     });
                   });
                 });
               });
-            }).toString()
+            }).toString(),
           })
           .then(function(createInjector) {
             $injector = createInjector();
@@ -822,7 +893,7 @@ define(['angular', 'given', 'util'], function(angular, given, util) {
             'findById',
             'link',
             'unlink',
-            'updateById'
+            'updateById',
           ]);
       });
 
@@ -861,7 +932,7 @@ define(['angular', 'given', 'util'], function(angular, given, util) {
           .then(function(cat) {
             return Product.categories.unlink({
               id: testData.product.id,
-              fk: cat.id
+              fk: cat.id,
             }).$promise;
           })
           .then(function() {
@@ -879,7 +950,7 @@ define(['angular', 'given', 'util'], function(angular, given, util) {
             return Product.categories.link(
               {
                 id: testData.product.id,
-                fk: cat.id
+                fk: cat.id,
               },
               // IMPORTANT: we must pass an empty postData arg, otherwise
               // both id and fk are sent in the request body and the "id" value
@@ -901,14 +972,14 @@ define(['angular', 'given', 'util'], function(angular, given, util) {
           [
             { name: 'another-cat' },
             { name: 'yet-another-cat' },
-            { name: 'last-cat' }
+            { name: 'last-cat' },
           ],
           function() {
             expect(cats).to.have.property('length', 3);
           });
         return cats.$promise
           .then(function() {
-            cats.forEach(function(cat){
+            cats.forEach(function(cat) {
               expect(cat).to.be.an.instanceof(Category);
             });
           });
@@ -934,6 +1005,45 @@ define(['angular', 'given', 'util'], function(angular, given, util) {
       });
     });
 
+    describe('$resource generated with includeSchema:true', function() {
+      var $injector;
+      before(function() {
+        return given.servicesForLoopBackApp(
+          {
+            models: {
+              Product: {
+                properties: {
+                  name: 'string',
+                  price: { type: 'number' },
+                },
+              },
+            },
+            includeSchema: true,
+          })
+          .then(function(createInjector) {
+            $injector = createInjector();
+          });
+      });
+
+      it('has "schema" property with normalized LDL', function() {
+        var Product = $injector.get('Product');
+        var methodNames = Object.keys(Product);
+        expect(methodNames).to.include.members(['schema']);
+        var schema = Product.schema;
+        expect(schema).to.have.property('name', 'Product');
+        expect(schema).to.have.property('properties');
+        console.log('schema properties', schema.properties);
+        expect(schema.properties).to.eql({
+          // "name: 'string'" was converted to full schema object
+          name: { type: 'String' },
+          // Type "number" was normalized to "Number"
+          price: { type: 'Number' },
+          // auto-injected id property
+          id: { id: 1, generated: true, type: 'Number' },
+        });
+      });
+    });
+
     describe('for models with belongsTo relation', function() {
       var $injector, Town, Country, testData;
       before(function() {
@@ -946,10 +1056,10 @@ define(['angular', 'given', 'util'], function(angular, given, util) {
                   relations: {
                     country: {
                       model: 'Country',
-                      type: 'belongsTo'
-                    }
-                  }
-                }
+                      type: 'belongsTo',
+                    },
+                  },
+                },
               },
               Country: {
                 properties: { name: 'string' },
@@ -957,11 +1067,11 @@ define(['angular', 'given', 'util'], function(angular, given, util) {
                   relations: {
                     towns: {
                       model: 'Town',
-                      type: 'hasMany'
-                    }
-                  }
-                }
-              }
+                      type: 'hasMany',
+                    },
+                  },
+                },
+              },
             },
             setupFn: (function(app, cb) {
               /*globals debug:true */
@@ -982,14 +1092,14 @@ define(['angular', 'given', 'util'], function(angular, given, util) {
 
                         cb(null, {
                           country: country,
-                          town: town
+                          town: town,
                         });
                       });
                     }
                   );
                 }
               );
-            }).toString()
+            }).toString(),
           })
           .then(function(createInjector) {
             $injector = createInjector();

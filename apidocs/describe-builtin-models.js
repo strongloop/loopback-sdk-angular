@@ -1,3 +1,9 @@
+// Copyright IBM Corp. 2014,2016. All Rights Reserved.
+// Node module: loopback-sdk-angular
+// This file is licensed under the MIT License.
+// License text available at https://opensource.org/licenses/MIT
+
+/* eslint quotes: ["error", "single"] */
 var fs = require('fs');
 var path = require('path');
 
@@ -6,7 +12,7 @@ var loopbackCoreJs = path.resolve(__dirname, 'loopback-core.js');
 try {
   var generator = require('..');
   var loopback = require('loopback');
-} catch(err) {
+} catch (err) {
   if (err.code === 'MODULE_NOT_FOUND' && fs.existsSync(loopbackCoreJs)) {
     console.log('Cannot load the generator, node_modules were not installed.');
     console.log('Ignoring the error since the output file is already there.');
