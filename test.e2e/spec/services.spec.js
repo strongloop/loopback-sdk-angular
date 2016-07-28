@@ -1044,6 +1044,150 @@ define(['angular', 'given', 'util'], function(angular, given, util) {
       });
     });
 
+    describe('$resource generated with includeCommonModules:false', function() {
+      var $injector;
+      before(function() {
+        return given.servicesForLoopBackApp(
+          {
+            models: {
+              Product: {
+                properties: {
+                  name: 'string',
+                  price: { type: 'number' },
+                },
+              },
+            },
+            includeCommonModules: false,
+          })
+          .then(function(createInjector) {
+            $injector = createInjector();
+          });
+      });
+
+      it('does not have "LoopBackAuth module"', function() {
+        expect(function() {
+          $injector.get('LoopBackAuth');
+        }).to.throw(/Unknown provider/);
+      });
+
+      it('does not have "LoopBackResource provider"', function() {
+        expect(function() {
+          $injector.get('LoopBackResource');
+        }).to.throw(/Unknown provider/);
+      });
+
+      it('does not have "LoopBackAuthRequestInterceptor module"',
+      function() {
+        expect(function() {
+          $injector.get('LoopBackAuthRequestInterceptor');
+        }).to.throw(/Unknown provider/);
+      });
+    });
+
+    describe('$resource generated with includeCommonModules:true (by default)',
+    function() {
+      var $injector;
+      before(function() {
+        return given.servicesForLoopBackApp(
+          {
+            models: {
+              Product: {
+                properties: {
+                  name: 'string',
+                  price: { type: 'number' },
+                },
+              },
+            },
+          })
+          .then(function(createInjector) {
+            $injector = createInjector();
+          });
+      });
+
+      it('has "LoopBackAuth module"', function() {
+        expect(function() {
+          $injector.get('LoopBackAuth');
+        }).to.not.throw();
+      });
+
+      it('has "LoopBackResource provider"', function() {
+        expect(function() {
+          $injector.get('LoopBackResource');
+        }).to.not.throw();
+      });
+
+      it('has "LoopBackAuthRequestInterceptor module"',
+      function() {
+        expect(function() {
+          $injector.get('LoopBackAuthRequestInterceptor');
+        }).to.not.throw();
+      });
+    });
+
+    describe('$resource generated with namespaceModels:true', function() {
+      var $injector;
+      before(function() {
+        return given.servicesForLoopBackApp(
+          {
+            models: {
+              Product: {
+                properties: {
+                  name: 'string',
+                  price: { type: 'number' },
+                },
+              },
+            },
+            name: 'lbServices',
+            namespaceModels: true,
+          })
+          .then(function(createInjector) {
+            $injector = createInjector();
+          });
+      });
+
+      it('defines the "Product" model as "lbServices.Product"', function() {
+        expect(function() {
+          $injector.get('Product');
+        }).to.throw(/Unknown provider/);
+        expect(function() {
+          $injector.get('lbServices.Product');
+        }).to.not.throw();
+      });
+    });
+
+    describe('$resource generated with namespaceModels:true and ' +
+    'namespaceDelimiter:_', function() {
+      var $injector;
+      before(function() {
+        return given.servicesForLoopBackApp(
+          {
+            models: {
+              Product: {
+                properties: {
+                  name: 'string',
+                  price: { type: 'number' },
+                },
+              },
+            },
+            name: 'lbServices',
+            namespaceModels: true,
+            namespaceDelimiter: '_',
+          })
+          .then(function(createInjector) {
+            $injector = createInjector();
+          });
+      });
+
+      it('defines the "Product" model as "lbServices.Product"', function() {
+        expect(function() {
+          $injector.get('Product');
+        }).to.throw(/Unknown provider/);
+        expect(function() {
+          $injector.get('lbServices_Product');
+        }).to.not.throw();
+      });
+    });
+
     describe('for models with belongsTo relation', function() {
       var $injector, Town, Country, testData;
       before(function() {
