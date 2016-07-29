@@ -58,7 +58,9 @@ define(['angular', 'angularMocks', 'angularResource'], function(angular) {
    * ```
    */
   given.servicesForLoopBackApp = function(options, cb) {
-    options.name = generateUniqueServiceName(options.name);
+    if (!options.name) {
+      options.name = generateUniqueServiceName(options.name);
+    }
 
     var promise = callSetup(options)
       .then(function(config) { return config.servicesUrl; })
