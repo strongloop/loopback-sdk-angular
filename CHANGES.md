@@ -1,3 +1,15 @@
+2016-07-29, Version 1.9.0
+=========================
+
+ * Allow namespacing and shared module exclusion (Keith Aleq Jackson)
+
+ * Update deprecated remoting metadata functions (David Cheung)
+
+ * Update dependency and test command for PhantomJS (jeff-clegg)
+
+ * Update URLs in CONTRIBUTING.md (#227) (Ryan Graham)
+
+
 2016-07-13, Version 1.8.0
 =========================
 
