@@ -5,6 +5,7 @@
 
 /* eslint quotes: ["error", "single"] */
 var fs = require('fs');
+var g = require('strong-globalize')();
 var path = require('path');
 
 var loopbackCoreJs = path.resolve(__dirname, 'loopback-core.js');
@@ -14,14 +15,14 @@ try {
   var loopback = require('loopback');
 } catch (err) {
   if (err.code === 'MODULE_NOT_FOUND' && fs.existsSync(loopbackCoreJs)) {
-    console.log('Cannot load the generator, node_modules were not installed.');
-    console.log('Ignoring the error since the output file is already there.');
+    g.log('Cannot load the generator, {{node_modules}} were not installed.');
+    g.log('Ignoring the error since the output file is already there.');
     process.exit();
   }
   throw err;
 }
 
-console.log('Generating API docs for LoopBack built-in models.');
+g.log('Generating API docs for {{LoopBack}} built-in models.');
 
 var app = loopback();
 
@@ -47,10 +48,10 @@ modelNames.forEach(function(key) {
   var model = loopback[key];
   if (model.prototype instanceof loopback.PersistedModel) {
     app.model(model, { dataSource: 'db' });
-    console.log('  added persisted model %s', key);
+    g.log('  added persisted model %s', key);
   } else if (model.prototype instanceof loopback.Model) {
     app.model(model);
-    console.log('  added model %s', key);
+    g.log('  added model %s', key);
   }
 });
 
@@ -78,4 +79,4 @@ script = script
 
 fs.writeFileSync(loopbackCoreJs, script);
 
-console.log('Done: %s', loopbackCoreJs);
+g.log('Done: %s', loopbackCoreJs);

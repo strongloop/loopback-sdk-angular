@@ -1,0 +1,11 @@
+{
+  "0728b2dc3a43387122cef6a0f8e6ae88": "Done: {0}",
+  "49b1a42e7167e2916a647035e63fa38d": "Ignoring the error since the output file is already there.",
+  "55b88ce76ecf41ed740c06fe368d6927": "  added persisted model {0}",
+  "8b3e8438920fd9cda69acce828e08c8c": "  added model {0}",
+  "8f526d8f0c4d626df5716289394acf4b": "Cannot load the generator, {{node_modules}} were not installed.",
+  "e845a1cf62c0034ffc626e5b367e95bc": "Generating API docs for {{LoopBack}} built-in models.",
+  "0dad411c9eeeb7faf91fe1239f377053": "Skipping {0} as it is not a {{LoopBack}} model",
+  "e3754d2933e680229f6317b0db99b5df": "Warning: scope {0}.{1} is missing {{_targetClass}} property.\nThe {{Angular}} code for this scope won't be generated.\nPlease upgrade to the latest version of\n{{loopback-datasource-juggler}} to fix the problem.",
+  "fd8574ea2b57b9b8cf5164811a138fb4": "Warning: scope {0}.{1} targets class {2}, which is not exposed \nvia remoting. The {{Angular}} code for this scope won't be generated."
+}
