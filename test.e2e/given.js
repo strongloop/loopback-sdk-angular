@@ -71,7 +71,8 @@ define(['angular', 'angularMocks', 'angularResource'], function(angular) {
           // Setup the mocked http provider to pass all $http requests
           // to our LoopBack server
           var $httpBackend = injector.get('$httpBackend');
-          ['GET', 'POST', 'PUT', 'DELETE', 'HEAD'].forEach(function(method) {
+          var methods = ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'HEAD'];
+          methods.forEach(function(method) {
             $httpBackend.when(method).passThrough();
           });
           return injector;
