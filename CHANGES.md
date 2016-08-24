@@ -1,3 +1,13 @@
+2016-08-24, Version 1.10.0
+==========================
+
+ * Add "modelsToIgnore" option (Aquid Shahwar)
+
+ * Support `PATCH` method in test cases (David Cheung)
+
+ * Globalize loopback-sdk-angular (David Cheung)
+
+
 2016-07-29, Version 1.9.0
 =========================
 
