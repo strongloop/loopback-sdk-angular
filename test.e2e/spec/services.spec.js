@@ -1268,6 +1268,32 @@ define(['angular', 'given', 'util'], function(angular, given, util) {
         });
       });
     });
+
+    describe('$resource not generated for ignored models', function() {
+      var $injector, IgnoredModel;
+      before(function() {
+        return  given.servicesForLoopBackApp({
+          models: {
+            IgnoredModel: {
+              properties: {
+                name: String,
+                required: true,
+              },
+            },
+          },
+          modelsToIgnore: ['IgnoredModel'],
+        })
+        .then(function(createInjector) {
+          $injector = createInjector();
+        });
+      });
+
+      it('model "IgnoredModel" should be undefined', function() {
+        IgnoredModel = $injector.has('IgnoredModel');
+        console.log('IgnoredModel', IgnoredModel);
+        expect(IgnoredModel).to.be.false;
+      });
+    });
   });
 
   function propGetter(name) {
