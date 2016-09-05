@@ -1,3 +1,9 @@
+2016-09-05, Version 1.10.1
+==========================
+
+ * Revert globalization for init script (David Cheung)
+
+
 2016-08-24, Version 1.10.0
 ==========================
 
