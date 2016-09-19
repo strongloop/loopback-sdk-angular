@@ -1,0 +1,7 @@
+{
+  "0dad411c9eeeb7faf91fe1239f377053": "Ignorando {0} pois ele não é um modelo de {{LoopBack}}",
+  "477f6bc8e5730e08b4b4f9d2b76e9e09": "Ignorando modelo {0} pois ele não deve ser publicado",
+  "e3754d2933e680229f6317b0db99b5df": "Aviso: escopo {0}.{1} não possui a propriedade {{_targetClass}}.\nO código {{Angular}} para este escopo não será gerado.\nFaça upgrade para a versão mais recente de\n{{loopback-datasource-juggler}} para corrigir o problema.",
+  "fd8574ea2b57b9b8cf5164811a138fb4": "Aviso: escopo {0}.{1} destina-se à classe {2}, a qual não é exposta \nvia remota. O código {{Angular}} para este escopo não será gerado."
+}
+

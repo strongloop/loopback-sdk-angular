@@ -1,0 +1,7 @@
+{
+  "0dad411c9eeeb7faf91fe1239f377053": "{0} est ignoré car ce n'est pas un modèle {{LoopBack}}",
+  "477f6bc8e5730e08b4b4f9d2b76e9e09": "Le modèle {0} est ignoré car il n'est pas destiné à être publié",
+  "e3754d2933e680229f6317b0db99b5df": "Avertissement : la portée {0}.{1} ne comporte pas la propriété {{_targetClass}}.\nLe code {{Angular}} pour cette portée ne sera pas généré.\nEffectuez la mise à niveau vers la dernière version de\n{{loopback-datasource-juggler}} pour corriger le problème.",
+  "fd8574ea2b57b9b8cf5164811a138fb4": "Avertissement : la portée {0}.{1} cible la classe {2} qui n'est pas exposée \nvia la gestion à distance. Le code {{Angular}} pour cette portée ne sera pas généré."
+}
+

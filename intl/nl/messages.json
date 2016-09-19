@@ -1,0 +1,7 @@
+{
+  "0dad411c9eeeb7faf91fe1239f377053": "{0} wordt overgeslagen omdat het geen {{LoopBack}}-model is",
+  "477f6bc8e5730e08b4b4f9d2b76e9e09": "Model {0} wordt overgeslagen omdat het niet moet worden gepubliceerd",
+  "e3754d2933e680229f6317b0db99b5df": "Waarschuwing: in bereik {0}.{1} ontbreekt eigenschap {{_targetClass}}.\nDe {{Angular}}-code voor dit bereik wordt niet gegenereerd.\nBreng een upgrade aan naar de meest recente versie van\n{{loopback-datasource-juggler}} om het probleem op te lossen.",
+  "fd8574ea2b57b9b8cf5164811a138fb4": "Waarschuwing: bereik {0}.{1} is gericht op klasse {2}, die niet wordt weergegeven\nvia remoting (systemen op afstand). De {{Angular}}-code voor dit bereik wordt niet gegenereerd."
+}
+
