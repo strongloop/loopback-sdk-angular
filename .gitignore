@@ -16,5 +16,3 @@ karma-xunit.xml
 checkstyle.xml
 .loopbackrc
 loopback-sdk-angular-*.tgz
-intl/*
-!intl/en/

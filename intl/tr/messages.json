@@ -1,0 +1,7 @@
+{
+  "0dad411c9eeeb7faf91fe1239f377053": "{0} bir {{LoopBack}} modeli olmadığından atlanıyor",
+  "477f6bc8e5730e08b4b4f9d2b76e9e09": "{0} modeli yayınlanmayacak olduğundan atlanıyor",
+  "e3754d2933e680229f6317b0db99b5df": "Uyarı: {0}.{1} kapsamında {{_targetClass}} özelliği eksik.\nBu kapsam için {{Angular}} kodu oluşturulmaz.\nSorunu gidermek için lütfen\n{{loopback-datasource-juggler}} olanağını en son sürüme yükseltin.",
+  "fd8574ea2b57b9b8cf5164811a138fb4": "Uyarı: {0}.{1} kapsamı, uzaktan iletişimle gösterilmeyen {2} sınıfını \nhedefliyor. Bu kapsam için {{Angular}} kodu oluşturulmaz."
+}
+
