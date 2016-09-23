@@ -25,7 +25,7 @@ console.log('Generating API docs for LoopBack built-in models.');
 
 var app = loopback();
 
-app.dataSource('db', { connector: 'memory', defaultForType: 'db' });
+app.dataSource('db', { connector: 'memory' });
 
 var modelNames = [];
 for (var key in loopback) {
