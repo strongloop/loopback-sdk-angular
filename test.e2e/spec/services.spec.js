@@ -444,7 +444,7 @@ define(['angular', 'given', 'util'], function(angular, given, util) {
           'removeById',
           'count',
           'prototype$patchAttributes',
-          'updateAttributes',
+          'prototype$updateAttributes',
         ]);
       });
 
