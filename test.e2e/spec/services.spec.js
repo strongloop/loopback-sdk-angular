@@ -655,6 +655,25 @@ define(['angular', 'given', 'util'], function(angular, given, util) {
           });
       });
 
+      it('clear user upon failed auth on User.getCurrent', function(done) {
+        return givenLoggedInUser('to-be-deleted@example.com')
+          .then(function(loggedInUser) {
+            return Customer.delete({ id: loggedInUser.userId }).$promise;
+          })
+          .then(function(deleteResponse) {
+            return Customer.getCurrent().$promise;
+          })
+          .then(function(res) {
+            throw new Error('User.getCurrent() was supposed to fail.');
+          }, function(res) {
+            expect(res.status).to.equal(401);
+            var auth = $injector.get('LoopBackAuth');
+            expect(auth.currentUserId).to.eql(null);
+            done();
+          })
+          .catch(util.throwHttpError);
+      });
+
       it('persists accessToken and currentUserId', function() {
         return givenLoggedInUser('persisted@example.com')
           .then(function() {
