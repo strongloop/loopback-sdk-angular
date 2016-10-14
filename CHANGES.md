@@ -1,3 +1,19 @@
+2016-10-14, Version 1.10.2
+==========================
+
+ * Update LoopBackResource function parameter name (Nick Duffy)
+
+ * Update ja translation file (Candy)
+
+ * clear user upon failed auth upon User.getCurrent (David Cheung)
+
+ * getEndPoints() compatibility for strong-remoting (David Cheung)
+
+ * Update translation files - round#2 (Candy)
+
+ * globalization: add translated strings (gunjpan)
+
+
 2016-09-05, Version 1.10.1
 ==========================
 
