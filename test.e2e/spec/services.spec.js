@@ -471,6 +471,50 @@ define(['angular', 'given', 'util'], function(angular, given, util) {
       });
     });
 
+    describe('$resource remoteMethod with array descriptions', function() {
+      var $injector;
+      before(function() {
+        return given.servicesForLoopBackApp(
+          {
+            models: {
+              'remotable': {},
+            },
+            setupFn: (function(app, cb) {
+              var Remotable = app.models.Remotable;
+              Remotable.arrayDescription = function(cb) {
+                cb(null, {});
+              };
+              Remotable.remoteMethod(
+                'arrayDescription', {
+                  description: ['hello ', 'world'],
+                  http: { path: '/arrayDescription', verb: 'POST' },
+                  accepts: {
+                    arg: 'data',
+                    type: 'string',
+                    description: ['foo', 'bar'],
+                  },
+                  returns: {
+                    arg: 'data',
+                    type: 'string',
+                    description: ['foo', 'bar'],
+                  },
+                }
+              );
+              cb();
+            }).toString(),
+          })
+          .then(function(createInjector) {
+            $injector = createInjector();
+          });
+      });
+      it('has a client method with array description', function() {
+        var Remotable = $injector.get('Remotable');
+        var methodNames = Object.keys(Remotable);
+        console.log('methods', methodNames);
+        expect(methodNames).to.include.members(['arrayDescription']);
+      });
+    });
+
     describe('$resource for model with custom scope-like methods', function() {
       var $injector;
       before(function() {
