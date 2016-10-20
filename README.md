@@ -5,14 +5,14 @@
 The JavaScript AngularJS SDK provides an API based on
 [ngResource.$resource](http://docs.angularjs.org/api/ngResource.$resource)
 that enable your AngularJS app to access a
-[LoopBack](http://docs.strongloop.com/loopback) server application.
+[LoopBack](http://loopback.io) server application.
 
 The client is dynamic, in other words it automatically includes all the
 LoopBack models and methods you've defined on your server.
 You don't have to manually write any static code.
 
 See the official [LoopBack AngularJS SDK
-documentation](http://docs.strongloop.com/display/LB/AngularJS+JavaScript+SDK)
+documentation](http://loopback.io/doc/en/lb2/AngularJS-JavaScript-SDK.html)
 for more information.
 
 ## Mailing List
