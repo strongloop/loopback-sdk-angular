@@ -361,7 +361,7 @@ define(['angular', 'given', 'util'], function(angular, given, util) {
         });
       });
 
-      it.skip('can create multiple new resources', function() {
+      it('can create multiple new resources', function() {
         var arr = MyModel.createMany([
          { name: 'one', multi: true },
          { name: 'two', multi: true },
@@ -966,7 +966,7 @@ define(['angular', 'given', 'util'], function(angular, given, util) {
           });
       });
 
-      it.skip('creates multiple related models', function() {
+      it('creates multiple related models', function() {
         var cats = Product.categories.createMany(
           { id: testData.product.id },
           [

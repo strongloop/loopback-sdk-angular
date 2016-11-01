@@ -88,7 +88,6 @@ masterApp.post('/setup', function(req, res, next) {
   }
 
   for (var m in models) {
-    console.log('custom model of ', m);
     var model = null;
     var options = models[m].options || {};
     if (initialModels[m]) {
