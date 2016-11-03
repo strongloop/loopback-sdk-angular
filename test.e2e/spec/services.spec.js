@@ -1208,10 +1208,12 @@ define(['angular', 'given', 'util'], function(angular, given, util) {
           });
       });
 
-      it('defines the "Product" model as "lbServices.Product"', function() {
+      it('does not define "Product" model', function() {
         expect(function() {
           $injector.get('Product');
         }).to.throw(/Unknown provider/);
+      });
+      it('defines the "Product" model as "lbServices.Product"', function() {
         expect(function() {
           $injector.get('lbServices.Product');
         }).to.not.throw();
@@ -1241,12 +1243,54 @@ define(['angular', 'given', 'util'], function(angular, given, util) {
           });
       });
 
-      it('defines the "Product" model as "lbServices.Product"', function() {
+      it('does not define "Product" model', function() {
         expect(function() {
           $injector.get('Product');
         }).to.throw(/Unknown provider/);
+      });
+      it('defines the "Product" model as "lbServices_Product"', function() {
         expect(function() {
           $injector.get('lbServices_Product');
+        }).to.not.throw();
+      });
+    });
+
+    describe('$resource generated with namespaceCommonModels:true and ' +
+      'namespaceDelimiter:_', function() {
+      var $injector;
+      before(function() {
+        return given.servicesForLoopBackApp(
+          {
+            models: {
+              Product: {
+                properties: {
+                  name: 'string',
+                  price: { type: 'number' },
+                },
+              },
+            },
+            name: 'lbServices',
+            namespaceCommonModels: true,
+            namespaceDelimiter: '_',
+          })
+          .then(function(createInjector) {
+            $injector = createInjector();
+          });
+      });
+
+      it('fails to find "Auth" common model', function() {
+        expect(function() {
+          $injector.get('Auth');
+        }).to.throw(/Unknown provider/);
+      });
+      it('fails to find "LoopBackAuth" common model', function() {
+        expect(function() {
+          $injector.get('LoopBackAuth');
+        }).to.throw(/Unknown provider/);
+      });
+      it('finds "lbServices_Auth" common model', function() {
+        expect(function() {
+          $injector.get('lbServices_Auth');
         }).to.not.throw();
       });
     });

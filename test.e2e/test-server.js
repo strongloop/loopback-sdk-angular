@@ -161,6 +161,7 @@ function generateService(generator, lbApp, apiUrl, opts) {
   if (opts.includeSchema !== undefined ||
       opts.includeCommonModules !== undefined ||
       opts.namespaceModels !== undefined ||
+      opts.namespaceCommonModels !== undefined ||
       opts.namespaceDelimiter !== undefined ||
       opts.modelsToIgnore !== undefined) {
     // the new options-based API
