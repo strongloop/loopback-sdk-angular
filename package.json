@@ -2,6 +2,9 @@
   "name": "loopback-sdk-angular",
   "version": "3.0.0-alpha.1",
   "description": "Tool for auto-generating Angular $resource services for LoopBack",
+  "engines": {
+    "node": ">=4"
+  },
   "main": "index.js",
   "scripts": {
     "generate-loopback-core": "node ./apidocs/describe-builtin-models.js",
