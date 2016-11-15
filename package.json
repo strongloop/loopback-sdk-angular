@@ -1,6 +1,6 @@
 {
   "name": "loopback-sdk-angular",
-  "version": "1.10.2",
+  "version": "3.0.0-alpha.1",
   "description": "Tool for auto-generating Angular $resource services for LoopBack",
   "main": "index.js",
   "scripts": {
