@@ -755,6 +755,25 @@ define(['angular', 'given', 'util'], function(angular, given, util) {
           .catch(util.throwHttpError);
       });
 
+      it('user should be able to call prototype $save ', function(done) {
+        return givenLoggedInUser('someguy@example.com')
+          .then(function() {
+            return getNew('Customer').getCurrent().$promise;
+          })
+          .then(function(user) {
+            expect(user.email).to.equal('someguy@example.com');
+            user.username = 'david';
+            user
+              .$save()
+              .then(function() {})
+              .catch(function(err) {
+                expect(err).to.have.property('status', 401);
+                done();
+              });
+          })
+          .catch(util.throwHttpError);
+      });
+
       it('persists data in sessionStorage when rememberMe=false', function() {
         return givenLoggedInUser(null, { rememberMe: false })
           .then(function() {
