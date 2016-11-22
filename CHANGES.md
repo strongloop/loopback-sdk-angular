@@ -1,3 +1,15 @@
+2016-11-22, Version 3.0.0
+=========================
+
+ * Drop support for Node v0.10 and v0.12 (Miroslav Bajtoš)
+
+ * Start the development of the next major version (Miroslav Bajtoš)
+
+ * Update README.md (Rand McKinney)
+
+ * test: array descriptions for remoteMethods (David Cheung)
+
+
 2016-10-14, Version 1.10.2
 ==========================
 
