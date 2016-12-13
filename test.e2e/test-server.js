@@ -81,16 +81,27 @@ masterApp.post('/setup', function(req, res, next) {
 
   lbApp = loopback();
 
-  lbApp.dataSource('db', { connector: 'memory', defaultForType: 'db' });
-  lbApp.dataSource('mail', { connector: 'mail', defaultForType: 'mail' });
-
-  for (var m in models) {
-    models[m].dataSource = 'db';
-    var model = initialModels[m];
-    lbApp.model(model || m, models[m]);
+  lbApp.dataSource('db', { connector: 'memory' });
+  for (var m in initialModels) {
+    if (initialModels[m].base.modelName == 'PersistedModel')
+      lbApp.model(initialModels[m], { dataSource: 'db' });
   }
 
-  loopback.autoAttach();
+  for (var m in models) {
+    var model = null;
+    var options = models[m].options || {};
+    if (initialModels[m]) {
+      model = initialModels[m];
+      lbApp.model(model, extend({ dataSource: 'db' }, options));
+    } else {
+      model = lbApp.registry.createModel(
+        m,
+        models[m].properties || {},
+        options
+      );
+      lbApp.model(model, { dataSource: 'db' });
+    }
+  }
 
   if (enableAuth)
     lbApp.enableAuth();

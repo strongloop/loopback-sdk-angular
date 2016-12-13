@@ -443,6 +443,7 @@ define(['angular', 'given', 'util'], function(angular, given, util) {
           'deleteById',
           'removeById',
           'count',
+          'prototype$patchAttributes',
           'prototype$updateAttributes',
         ]);
       });
@@ -917,7 +918,6 @@ define(['angular', 'given', 'util'], function(angular, given, util) {
               app.models.Product.create({ name: 'p1' }, function(err, prod) {
                 if (err) return cb(err);
                 debug('Created product', prod);
-
                 prod.categories.create({ name: 'c1' }, function(err, cat) {
                   if (err) return cb(err);
                   debug('Created category', cat);
