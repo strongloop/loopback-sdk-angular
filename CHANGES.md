@@ -1,3 +1,13 @@
+2017-02-06, Version 3.1.0
+=========================
+
+ * Update sdk to use loopback 3.x (David Cheung)
+
+ * Update ko translation file (Candy)
+
+ * Update paid support URL (Siddhi Pai)
+
+
 2016-11-22, Version 3.0.0
 =========================
 
