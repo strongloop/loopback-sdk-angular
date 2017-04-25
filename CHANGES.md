@@ -1,3 +1,9 @@
+2017-04-25, Version 3.2.0
+=========================
+
+ * Add new option namespaceCommonModels (Kenny Sabir)
+
+
 2017-02-06, Version 3.1.0
 =========================
 
