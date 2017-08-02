@@ -1,6 +1,7 @@
 {
   "0dad411c9eeeb7faf91fe1239f377053": "Skipping {0} as it is not a {{LoopBack}} model",
   "477f6bc8e5730e08b4b4f9d2b76e9e09": "Skipping {0} model as it is not to be published",
+  "6a4a64b256cc6c71a4f041b1949d9591": "Unsupported endpoint property: {0}",
   "e3754d2933e680229f6317b0db99b5df": "Warning: scope {0}.{1} is missing {{_targetClass}} property.\nThe {{Angular}} code for this scope won't be generated.\nPlease upgrade to the latest version of\n{{loopback-datasource-juggler}} to fix the problem.",
   "fd8574ea2b57b9b8cf5164811a138fb4": "Warning: scope {0}.{1} targets class {2}, which is not exposed \nvia remoting. The {{Angular}} code for this scope won't be generated."
 }
