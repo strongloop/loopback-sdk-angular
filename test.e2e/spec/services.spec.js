@@ -1102,7 +1102,7 @@ define(['angular', 'given', 'util'], function(angular, given, util) {
           // Type "number" was normalized to "Number"
           price: { type: 'Number' },
           // auto-injected id property
-          id: { id: 1, generated: true, type: 'Number' },
+          id: { id: 1, generated: true, type: 'Number', updateOnly: true },
         });
       });
     });
