@@ -1095,15 +1095,11 @@ define(['angular', 'given', 'util'], function(angular, given, util) {
         var schema = Product.schema;
         expect(schema).to.have.property('name', 'Product');
         expect(schema).to.have.property('properties');
-        console.log('schema properties', schema.properties);
-        expect(schema.properties).to.eql({
-          // "name: 'string'" was converted to full schema object
-          name: { type: 'String' },
-          // Type "number" was normalized to "Number"
-          price: { type: 'Number' },
-          // auto-injected id property
-          id: { id: 1, generated: true, type: 'Number', updateOnly: true },
-        });
+        expect(schema.properties).to.have.keys('name', 'price', 'id');
+        expect(schema.properties.name).to.have.property('type', 'String');
+        expect(schema.properties.price).to.have.property('type', 'Number');
+        expect(schema.properties.id).to.include(
+            { id: 1, generated: true, type: 'Number' });
       });
     });
 
