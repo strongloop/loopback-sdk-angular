@@ -1,3 +1,23 @@
+2017-08-22, Version 3.2.1
+=========================
+
+ * Address code review comment (rashmihunt)
+
+ * updateOnly property (rashmihunt)
+
+ * Update Issue and PR Templates (#277) (Sakib Hasan)
+
+ * Update translated strings Q3 2017 (Allen Boone)
+
+ * update translation file (Diana Lau)
+
+ * Add CODEOWNER file (Diana Lau)
+
+ * Replicate new issue_template from loopback (Siddhi Pai)
+
+ * Replicate issue_template from loopback repo (Siddhi Pai)
+
+
 2017-04-25, Version 3.2.0
 =========================
 
