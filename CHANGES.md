@@ -1,3 +1,13 @@
+2018-01-25, Version 3.3.0
+=========================
+
+ * Update ejs to the latest version (Lorenzo Kappeler)
+
+ * README: update link to docs (Dr Luke Angel)
+
+ * Update LICENSE (Diana Lau)
+
+
 2017-08-22, Version 3.2.1
 =========================
 
