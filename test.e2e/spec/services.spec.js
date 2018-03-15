@@ -1397,6 +1397,98 @@ define(['angular', 'given', 'util'], function(angular, given, util) {
         expect(IgnoredModel).to.be.false;
       });
     });
+
+    describe('inherit params for custom method that extends relation',
+      function() {
+        var $injector, Person, testData;
+        before(function() {
+          return given.servicesForLoopBackApp(
+            {
+              models: {
+                Person: {
+                  properties: { name: 'string' },
+                  options: {
+                    relations: {
+                      _addresses: {
+                        model: 'Address',
+                        type: 'embedsMany',
+                        property: 'addresses',
+                      },
+                    },
+                  },
+                },
+                Address: {
+                  properties: { name: 'string' },
+                },
+              },
+              name: 'custom_method',
+              setupFn: (function(app, cb) {
+                /*globals debug:true */
+                // eslint-disable-next-line camelcase
+                app.models.Person.prototype.__custom___address =
+                function(fk, cb) { return cb(null, { name: 'custom' }); };
+                app.models.Person.remoteMethod('prototype.__custom___address', {
+                  accepts: [
+                    {
+                      arg: 'fk',
+                      type: 'any',
+                      required: true,
+                      http: { source: 'path' },
+                    },
+                  ],
+                  returns: [
+                    {
+                      arg: 'data',
+                      type: 'object',
+                      root: true,
+                    },
+                  ],
+                  http: {
+                    path: '/_address/:fk/custom',
+                    verb: 'post',
+                  },
+                });
+                app.models.Person.create(
+                { name: 'Matteo' },
+                function(err, person) {
+                  if (err) return cb(err);
+                  debug('Created person', person);
+
+                  person._addresses.create({ name: 'Turin' },
+                    function(err, address) {
+                      if (err) return cb(err);
+                      debug('Created address', address);
+
+                      person._addresses(true, function(err, res) {
+                        if (err) return cb(err);
+                        debug('Address of the person', res);
+
+                        cb(null, {
+                          person: person,
+                          address: address,
+                        });
+                      });
+                    }
+                  );
+                }
+              );
+              }).toString(),
+            })
+          .then(function(createInjector) {
+            $injector = createInjector();
+            Person = $injector.get('Person');
+            testData = $injector.get('testData');
+          });
+        });
+
+        it('create correct endpoint for custom method', function() {
+          var customPerson = Person.prototype$__custom___address(
+          { id: testData.person.id, fk: testData.address.id });
+          return customPerson.$promise.then(function() {
+            expect(customPerson.name).to.be.equal('custom');
+          });
+        });
+      });
   });
 
   function propGetter(name) {
