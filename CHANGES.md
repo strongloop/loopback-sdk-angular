@@ -1,3 +1,11 @@
+2018-04-19, Version 3.3.1
+=========================
+
+ * fix: Node.js 4.x support (Miroslav Bajtoš)
+
+ * Enable Travis CI integration (Miroslav Bajtoš)
+
+
 2018-01-25, Version 3.3.0
 =========================
 
