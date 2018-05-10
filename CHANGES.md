@@ -1,3 +1,9 @@
+2018-05-10, Version 3.3.2
+=========================
+
+ * fix inherit params for custom endpoint (Matteo Padovano)
+
+
 2018-04-19, Version 3.3.1
 =========================
 
