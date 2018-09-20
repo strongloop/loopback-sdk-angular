@@ -28,7 +28,7 @@
   },
   "dependencies": {
     "ejs": "^2.5.7",
-    "strong-globalize": "^2.6.0"
+    "strong-globalize": "^4.1.2"
   },
   "devDependencies": {
     "angular": "^1.4.9",
