@@ -1,3 +1,13 @@
+2018-09-20, Version 3.4.0
+=========================
+
+ * Upgrade strong-globalize to latest (Miroslav Bajtoš)
+
+ * Drop support for Node.js 4.x, test 10.x (Miroslav Bajtoš)
+
+ * [WebFM] cs/pl/ru translation (candytangnb)
+
+
 2018-05-10, Version 3.3.2
 =========================
 
