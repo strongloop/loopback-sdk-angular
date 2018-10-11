@@ -345,6 +345,19 @@ define(['angular', 'given', 'util'], function(angular, given, util) {
         );
         return list.$promise;
       });
+      
+      it('has a $cancelRequest property', function() {
+        var list = MyModel.find(
+          function() {
+            
+          },
+          util.throwHttpError
+        );
+        
+        expect(list).to.have.own.property('$cancelRequest');
+        
+        return list.$promise;
+      });
 
       it('can create new resource', function() {
         var obj = MyModel.create({ name: 'new' }, function() {
