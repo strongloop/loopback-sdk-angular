@@ -1,3 +1,11 @@
+2019-01-14, Version 3.4.1
+=========================
+
+ * fix(model-namespacing): Fix namespacing of models (rcky)
+
+ * add lts annoucement (jannyHou)
+
+
 2018-09-20, Version 3.4.0
 =========================
 
