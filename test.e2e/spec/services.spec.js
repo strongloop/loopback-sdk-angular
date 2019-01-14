@@ -1291,6 +1291,162 @@ define(['angular', 'given', 'util'], function(angular, given, util) {
       });
     });
 
+    describe('$resources generated with namespaceCommonModels:true and ' +
+      'namespaceDelimiter:_ properly expose scope methods', function() {
+      var $injector, Town, Country, Language, testData;
+      before(function() {
+        return given.servicesForLoopBackApp(
+          {
+            models: {
+              Town: {
+                properties: { name: 'string' },
+                options: {
+                  relations: {
+                    country: {
+                      model: 'Country',
+                      type: 'belongsTo',
+                    },
+                  },
+                },
+              },
+              Country: {
+                properties: { name: 'string' },
+                options: {
+                  relations: {
+                    towns: {
+                      model: 'Town',
+                      type: 'hasMany',
+                    },
+                    languages: {
+                      model: 'Language',
+                      type: 'hasAndBelongsToMany',
+                    },
+                  },
+                },
+              },
+              Language: {
+                properties: { name: 'string' },
+                options: {
+                  relations: {
+                    countries: {
+                      model: 'Country',
+                      type: 'hasAndBelongsToMany',
+                    },
+                  },
+                },
+              },
+            },
+            name: 'testServices',
+            namespaceModels: true,
+            namespaceDelimiter: '_',
+            setupFn: (function(app, cb) {
+              /*globals debug:true */
+              app.models.Country.create(
+                { name: 'a-country' },
+                function(err, country) {
+                  if (err) return cb(err);
+                  debug('Created country', country);
+
+                  country.languages.create(
+                    [
+                      { name: 'a-language-1' },
+                      { name: 'a-language-2' },
+                    ],
+                    function(err, languages) {
+                      if (err) return cb(err);
+                      debug('Created languages', languages);
+
+                      country.towns.create({ name: 'a-town' },
+                        function(err, town) {
+                          if (err) return cb(err);
+                          debug('Created town', town);
+                          var semaphore = 2;
+                          var finalCB = function() {
+                            if (--semaphore !== 0) return;
+                            cb(null, {
+                              country: country,
+                              town: town,
+                              languages: languages,
+                            });
+                          };
+
+                          town.country(true, function(err, res) {
+                            if (err) return cb(err);
+                            debug('Country of the town', res);
+                            finalCB();
+                          });
+                          country.languages(true, function(err, res) {
+                            if (err) return cb(err);
+                            debug('Languages of the country', res);
+                            finalCB();
+                          });
+                        }
+                      );
+                    }
+                  );
+                }
+              );
+            }).toString(),
+          })
+          .then(function(createInjector) {
+            $injector = createInjector();
+            Town = $injector.get('testServices_Town');
+            Country = $injector.get('testServices_Country');
+            Language = $injector.get('testServices_Language');
+            testData = $injector.get('testData');
+          });
+      });
+
+      it('provides scope methods', function() {
+        expect(Town).to.have.property('country').that.is.a('function');
+        expect(Country).to.have.property('towns').that.is.a('function');
+        expect(Country).to.have.property('languages').that.is.a('function');
+        expect(Language).to.have.property('countries').that.is.a('function');
+      });
+
+      it('gets the related model with the correct prototype of ' +
+        'belongsTo relations', function() {
+        var country = Town.country({ id: testData.town.id });
+        return country.$promise.then(function() {
+          expect(country).to.be.instanceof(Country);
+          // compare properties
+          for (var k in testData.country) {
+            expect(country[k], 'country.' + k).to.equal(testData.country[k]);
+          }
+        });
+      });
+
+      it('gets the related models with the correct prototype of hasMany' +
+        'relations', function() {
+        var towns = Country.towns({ id: testData.country.id });
+        return towns.$promise.then(function() {
+          expect(towns).to.be.an('array');
+          var town = towns[0];
+          // compare properties
+          for (var k in testData.town) {
+            expect(town[k], 'town.' + k).to.equal(testData.town[k]);
+          }
+        });
+      });
+
+      it('gets the related models with the correct prototype of ' +
+        'hasAndBelongsToMany relations', function() {
+        var languages = Country.languages({ id: testData.country.id });
+        return languages.$promise.then(function() {
+          expect(languages).to.be.an('array');
+          expect(languages.length, 'amount of languages').to.equal(2);
+          languages.forEach(function(language, index) {
+            var testDataLanguage = testData.languages[index];
+            expect(language).to.be.instanceof(Language);
+            for (var k in testDataLanguage) {
+              expect(language[k], 'language.' + k)
+                .to.equal(testDataLanguage[k]);
+            }
+          });
+        });
+      });
+    });
+
     describe('for models with belongsTo relation', function() {
       var $injector, Town, Country, testData;
       before(function() {
