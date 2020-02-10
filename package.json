@@ -3,7 +3,7 @@
   "version": "3.4.1",
   "description": "Tool for auto-generating Angular $resource services for LoopBack",
   "engines": {
-    "node": ">=6"
+    "node": ">=10"
   },
   "main": "index.js",
   "scripts": {
