@@ -1,3 +1,17 @@
+2020-03-06, Version 3.5.0
+=========================
+
+ * Update LTS status in README (Miroslav Bajtoš)
+
+ * chore: add Node.js 12 to travis (Nora)
+
+ * chore: drop support for Node.js 6 and Node.js 8 (Nora)
+
+ * chore: enable stalebot (Diana Lau)
+
+ * chore: update copyrights years (Agnes Lin)
+
+
 2019-01-14, Version 3.4.1
 =========================
 
